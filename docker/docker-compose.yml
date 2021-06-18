@@ -1,0 +1,50 @@
+version: '3'
+services:
+  go-api:
+    container_name: go_vue_typescript_api
+    build:
+      context: ./api
+      args:
+        - GO_VERSION=${GO_VERSION}
+        - API_CODE_WORKDIR=${API_CODE_WORKDIR}
+    volumes:
+      - ${API_CODE_LOCAL_PATH}:${API_CODE_WORKDIR}
+    ports:
+      - ${API_PORT}:${API_PORT}
+    tty: true
+    depends_on:
+      - mysql
+
+  vue-app:
+    container_name: go_vue_typescript_app
+    build:
+      context: ./app
+      args:
+        - APP_CODE_WORKDIR=${APP_CODE_WORKDIR}
+        - VUE_VERSION=${VUE_VERSION}
+        - TYPESCRIPT_VERSION=${TYPESCRIPT_VERSION}
+        - VITE_VERSION=${VITE_VERSION}
+        - NODE_VERSION=${NODE_VERSION}
+    volumes:
+      - ${APP_CODE_LOCAL_PATH}:${APP_CODE_WORKDIR}
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    tty: true
+
+  mysql:
+    container_name: go_vue_typescript_mysql
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_VERSION=${MYSQL_VERSION}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${WORKSPACE_TIMEZONE}
+    volumes:
+      - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+      - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+    ports:
+      - "${MYSQL_PORT}:3306"
