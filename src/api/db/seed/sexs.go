@@ -1,4 +1,4 @@
-package seeders
+package seed
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type SexMst struct {
 	updated_at string
 }
 
-func CustomerSeed() {
+func (s Seed) SexSeed() {
 	// あくまでフォーマットで使用するため、適当な日付を指定する。
 	dateTimeFormat := "2006-01-02 15:04:05"
 	sexLists := []SexMst{
@@ -45,18 +45,25 @@ func CustomerSeed() {
 		fmt.Println(index, sexMasterData.code)
 		fmt.Println(index, sexMasterData.name)
 	}
-	//
-	// for _, sexMasterData := range sexLists {
-	// 	// prepare the statement
-	// 	stmt, _ := s.db.Prepare(`INSERT INTO sex_mst(code, name, created_at, updated_at) VALUES (?,?,?,?)`)
-	// 	// execute query
-	// 	_, err := stmt.Exec(sexMasterData.code,
-	// 		sexMasterData.name,
-	// 		sexMasterData.created_at,
-	// 		sexMasterData.updated_at,
-	// 	)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
+
+	for _, sexMasterData := range sexLists {
+		// prepare the statement
+		stmt, errors := s.db.Prepare(`INSERT INTO sex_mst(code, name, created_at, updated_at) VALUES (?,?,?,?)`)
+		fmt.Println(stmt, errors)
+		// execute query
+		_, err := stmt.Exec(
+			sexMasterData.code,
+			sexMasterData.name,
+			sexMasterData.created_at,
+			sexMasterData.updated_at,
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
 }
+
+//　これもNumMethodで数としてカウントされる。
+// func (s Seed)Test() {
+// 	fmt.Println("I am Test")
+// }
