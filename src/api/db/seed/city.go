@@ -8,13 +8,6 @@ import (
 	"time"
 )
 
-type CityMst struct {
-	pref_code  int
-	pref       string
-	created_at string
-	updated_at string
-}
-
 func (s Seed) CityMstSeed() {
 	// 相対パスから絶対パスを取得。
 	filePath, err := filepath.Abs("../assets/files/pref/pref.xlsx")
@@ -47,9 +40,7 @@ func (s Seed) CityMstSeed() {
 		}
 
 		if rows[i][prefecture_Index] != "" && rows[i][city_Index] != "" {
-			fmt.Print(rows[i][prefecture_Index], "\t")
 			stmt, errors := s.db.Prepare(`INSERT INTO city_mst(pref_code, city_code, city, created_at, updated_at) VALUES (?,?,?,?,?)`)
-			fmt.Println(stmt, errors)
 			// execute query
 			_, err := stmt.Exec(
 				prefCode,
@@ -58,11 +49,6 @@ func (s Seed) CityMstSeed() {
 				time.Now().Format(dateTimeFormat),
 				time.Now().Format(dateTimeFormat),
 			)
-			fmt.Println(prefCode,
-				rows[i][code_Index],
-				rows[i][city_Index],
-				time.Now().Format(dateTimeFormat),
-				time.Now().Format(dateTimeFormat))
 			if err != nil {
 				panic(err)
 			}

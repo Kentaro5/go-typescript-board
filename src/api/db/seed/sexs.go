@@ -41,15 +41,10 @@ func (s Seed) SexSeed() {
 			updated_at: time.Now().Format(dateTimeFormat),
 		},
 	}
-	for index, sexMasterData := range sexLists {
-		fmt.Println(index, sexMasterData.code)
-		fmt.Println(index, sexMasterData.name)
-	}
 
 	for _, sexMasterData := range sexLists {
 		// prepare the statement
 		stmt, errors := s.db.Prepare(`INSERT INTO sex_mst(code, name, created_at, updated_at) VALUES (?,?,?,?)`)
-		fmt.Println(stmt, errors)
 		// execute query
 		_, err := stmt.Exec(
 			sexMasterData.code,

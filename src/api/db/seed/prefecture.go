@@ -7,13 +7,6 @@ import (
 	"time"
 )
 
-type PrefMst struct {
-	pref_code  int
-	pref       string
-	created_at string
-	updated_at string
-}
-
 func (s Seed) PrefMstSeed() {
 	// 相対パスから絶対パスを取得。
 	filePath, err := filepath.Abs("../assets/files/pref/pref.xlsx")
@@ -39,9 +32,7 @@ func (s Seed) PrefMstSeed() {
 
 	for _, row := range rows {
 		if row[prefecture_Index] != "" && row[city_Index] == "" {
-			fmt.Print(row[prefecture_Index], "\t")
 			stmt, errors := s.db.Prepare(`INSERT INTO pref_mst(pref_code, pref, created_at, updated_at) VALUES (?,?,?,?)`)
-			fmt.Println(stmt, errors)
 			// execute query
 			_, err := stmt.Exec(
 				row[code_Index], // code_idexが整数ではなく、文字列で来るのにGoでSQLインサートする際に暗黙的に、文字列から整数に変換されている。

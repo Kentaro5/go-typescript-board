@@ -8,13 +8,6 @@ import (
 	"time"
 )
 
-type WardMst struct {
-	pref_code  int
-	pref       string
-	created_at string
-	updated_at string
-}
-
 func (s Seed) WardMstSeed() {
 	// 相対パスから絶対パスを取得。
 	filePath, err := filepath.Abs("../assets/files/ward/ward.xlsx")
@@ -34,7 +27,6 @@ func (s Seed) WardMstSeed() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(rows[0])
 
 	// あくまでフォーマットで使用するため、適当な日付を指定する。
 	dateTimeFormat := "2006-01-02 15:04:05"
