@@ -14,12 +14,6 @@ type PrefMst struct {
 	updated_at string
 }
 
-const (
-	CODE_INDEX       int = 0
-	PREFECTURE_INDEX int = 1
-	CITY_INDEX       int = 2
-)
-
 func (s Seed) PrefMstSeed() {
 	// 相対パスから絶対パスを取得。
 	filePath, err := filepath.Abs("../assets/files/pref/pref.xlsx")
