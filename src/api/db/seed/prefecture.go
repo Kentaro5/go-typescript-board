@@ -42,15 +42,16 @@ func (s Seed) PrefMstSeed() {
 
 	// あくまでフォーマットで使用するため、適当な日付を指定する。
 	dateTimeFormat := "2006-01-02 15:04:05"
+
 	for _, row := range rows {
-		if row[PREFECTURE_INDEX] != "" && row[CITY_INDEX] == "" {
-			fmt.Print(row[PREFECTURE_INDEX], "\t")
+		if row[prefecture_Index] != "" && row[city_Index] == "" {
+			fmt.Print(row[prefecture_Index], "\t")
 			stmt, errors := s.db.Prepare(`INSERT INTO pref_mst(pref_code, pref, created_at, updated_at) VALUES (?,?,?,?)`)
 			fmt.Println(stmt, errors)
 			// execute query
 			_, err := stmt.Exec(
-				row[CODE_INDEX],
-				row[PREFECTURE_INDEX],
+				row[code_Index], // code_idexが整数ではなく、文字列で来るのにGoでSQLインサートする際に暗黙的に、文字列から整数に変換されている。
+				row[prefecture_Index],
 				time.Now().Format(dateTimeFormat),
 				time.Now().Format(dateTimeFormat),
 			)
@@ -59,5 +60,4 @@ func (s Seed) PrefMstSeed() {
 			}
 		}
 	}
-
 }
