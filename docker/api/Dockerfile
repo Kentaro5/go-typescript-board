@@ -3,7 +3,7 @@ ARG API_CODE_WORKDIR=${API_CODE_WORKDIR}
 
 FROM golang:${GO_VERSION}-alpine
 
-RUN apk update && apk add git
+RUN apk update && apk add git alpine-sdk
 
 # ワーキングディレクトリの設定
-WORKDIR /src/api
+WORKDIR /go/src
