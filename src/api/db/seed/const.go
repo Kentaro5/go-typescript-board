@@ -9,3 +9,8 @@ const (
 	prefecture_Index int = 1
 	city_Index       int = 2
 )
+
+const (
+	ward_code_Index int = 0
+	ward_Index      int = 1
+)
