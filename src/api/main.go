@@ -1,25 +1,21 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"io"
+	"log"
 	"net/http"
 )
 
-type hotdog int
+func main() {
+	router := mux.NewRouter()
+	getRouter := router.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", HomeHandler)
 
-func (m hotdog) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	switch req.URL.Path {
-	case "/dog":
-		io.WriteString(w, "doggy doggy doggy")
-	case "/cat":
-		io.WriteString(w, "kitty kitty kitty")
-	}
+	// http.ListenAndServeで使用しているルーティングとポートを紐付けないと、動かない。
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
-func main() {
-	var d hotdog
-	http.ListenAndServe(":8000", d)
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "kitty kitty kitty")
 }
