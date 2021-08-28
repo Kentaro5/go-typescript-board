@@ -1,14 +1,13 @@
-package main
+package db
 
 import (
+	"api/db/seed"
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"api/seed"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 func main() {
