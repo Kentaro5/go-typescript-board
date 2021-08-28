@@ -32,7 +32,7 @@ func (s Seed) PrefMstSeed() {
 
 	for _, row := range rows {
 		if row[prefecture_Index] != "" && row[city_Index] == "" {
-			stmt, errors := s.db.Prepare(`INSERT INTO pref_mst(pref_code, pref, created_at, updated_at) VALUES (?,?,?,?)`)
+			stmt, _ := s.db.Prepare(`INSERT INTO pref_mst(pref_code, pref, created_at, updated_at) VALUES (?,?,?,?)`)
 			// execute query
 			_, err := stmt.Exec(
 				row[code_Index], // code_idexが整数ではなく、文字列で来るのにGoでSQLインサートする際に暗黙的に、文字列から整数に変換されている。

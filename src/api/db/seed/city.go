@@ -40,7 +40,7 @@ func (s Seed) CityMstSeed() {
 		}
 
 		if rows[i][prefecture_Index] != "" && rows[i][city_Index] != "" {
-			stmt, errors := s.db.Prepare(`INSERT INTO city_mst(pref_code, city_code, city, created_at, updated_at) VALUES (?,?,?,?,?)`)
+			stmt, _ := s.db.Prepare(`INSERT INTO city_mst(pref_code, city_code, city, created_at, updated_at) VALUES (?,?,?,?,?)`)
 			// execute query
 			_, err := stmt.Exec(
 				prefCode,
