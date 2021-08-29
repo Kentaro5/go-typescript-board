@@ -1,6 +1,9 @@
 package tokenValueObject
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -17,6 +20,14 @@ import (
 type AccessTokenCustomClaims struct {
 	UserID  string
 	KeyType string
+	jwt.StandardClaims
+}
+
+// リフレッシュトークンで必要な要素
+type RefreshTokenCustomClaims struct {
+	UserID    string
+	CustomKey string
+	KeyType   string
 	jwt.StandardClaims
 }
 
@@ -61,4 +72,43 @@ func GenerateAccessToken(userID string) (string, error) {
 	accessToken, err := token.SignedString(signKey)
 
 	return accessToken, err
+}
+
+func GenerateRefreshToken(userId string, tokenHash string) (string, error) {
+	cusKey := GenerateCustomKey(userId, tokenHash)
+	tokenType := "refresh"
+	accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
+
+	claims := RefreshTokenCustomClaims{
+		userId,
+		cusKey,
+		tokenType,
+		jwt.StandardClaims{
+			Issuer: "go-typescript-board.auth.service",
+		},
+	}
+
+	signBytes, err := ioutil.ReadFile(accessTokenKeyPath)
+	if err != nil {
+		return "", errors.New("could not generate refresh token. please try again later")
+	}
+
+	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	if err != nil {
+		return "", errors.New("could not generate refresh token. please try again later")
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	accessToken, err := token.SignedString(signKey)
+
+	return accessToken, err
+}
+
+func GenerateCustomKey(userID string, tokenHash string) string {
+
+	// data := userID + tokenHash
+	h := hmac.New(sha256.New, []byte(tokenHash))
+	h.Write([]byte(userID))
+	sha := hex.EncodeToString(h.Sum(nil))
+	return sha
 }

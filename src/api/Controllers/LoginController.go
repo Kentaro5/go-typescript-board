@@ -1,7 +1,6 @@
 package Controllers
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	"api/db"
 	"api/infrastructure/userRepositopry"
 	"golang.org/x/crypto/bcrypt"
-	"utils"
 )
 
 func Login(w http.ResponseWriter, request *http.Request) {
@@ -38,14 +36,25 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	userID := strconv.Itoa(user.Id)
 	accessToken, err := tokenValueObject.GenerateAccessToken(userID)
 	if err != nil {
+		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		// data.ToJSON(&GenericError{Error: err.Error()}, w)
-		utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
 		return
 	}
 
-	fmt.Println(accessToken)
+	refreshToken, err := tokenValueObject.GenerateRefreshToken(userID, user.TokenHash)
+	if err != nil {
+		fmt.Println(accessToken)
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		// data.ToJSON(&GenericError{Error: err.Error()}, w)
+		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		return
+	}
+
+	fmt.Println(refreshToken)
 }
 
 func checkPassword(password string, requestPassword string) bool {
