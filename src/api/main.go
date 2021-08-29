@@ -11,6 +11,7 @@ func main() {
 	router := mux.NewRouter()
 	//get := router.Methods(http.MethodGet).Subrouter()
 	router.HandleFunc("/signUp", Controllers.SignUp).Methods("POST")
+	router.HandleFunc("/login", Controllers.Login).Methods("POST")
 
 	// http.ListenAndServeで使用しているルーティングとポートを紐付けないと、動かない。
 	log.Fatal(http.ListenAndServe(":8000", router))
