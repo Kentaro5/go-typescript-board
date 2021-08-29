@@ -9,8 +9,22 @@ import (
 	"api/Domain/ValueObject/tokenValueObject"
 	"api/db"
 	"api/infrastructure/userRepositopry"
+	"api/utils"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// GenericResponse is the format of our response
+type GenericResponse struct {
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+}
+
+type AuthResponse struct {
+	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token"`
+	Username     string `json:"username"`
+}
 
 func Login(w http.ResponseWriter, request *http.Request) {
 	reqEmail := request.FormValue("email")
@@ -54,7 +68,13 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fmt.Println(refreshToken)
+	w.WriteHeader(http.StatusOK)
+	// data.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
+	utils.ToJSON(&GenericResponse{
+		Status:  true,
+		Message: "Successfully logged in",
+		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Name},
+	}, w)
 }
 
 func checkPassword(password string, requestPassword string) bool {
