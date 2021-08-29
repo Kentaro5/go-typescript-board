@@ -15,11 +15,6 @@ import (
 )
 
 func SignUp(w http.ResponseWriter, request *http.Request) {
-	connection, err := db.NewConnection()
-	if err != nil {
-		log.Fatalf("err:", err)
-	}
-
 	if err := request.ParseForm(); err != nil {
 		fmt.Fprintf(w, "ParseForm() err: %v", err)
 		return
@@ -62,6 +57,10 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 	userData.CreatedAt = dateTime
 	userData.UpdatedAt = dateTime
 
+	connection, err := db.NewConnection()
+	if err != nil {
+		log.Fatalf("err:", err)
+	}
 	userRepositopry.Create(connection, userData)
 	io.WriteString(w, "kitty kitty kitty")
 }
