@@ -12,4 +12,5 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/xuri/excelize/v2 v2.4.1
 	github.com/ziutek/mymysql v1.5.4 // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 )
