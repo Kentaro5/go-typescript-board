@@ -2,7 +2,6 @@ package Controllers
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,9 +20,9 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 	}
 
 	userData := userEntity.User{}
-	userData.Name = request.FormValue("Name")
-	userData.Email = request.FormValue("Email")
-	hashedPassword, err := userEntity.HashPassword(request.FormValue("Password"))
+	userData.Name = request.FormValue("name")
+	userData.Email = request.FormValue("email")
+	hashedPassword, err := userEntity.HashPassword(request.FormValue("password"))
 	if err != nil {
 		fmt.Println("cannotHashPassword")
 	}
@@ -31,19 +30,19 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 	dateTime := time.Now().Format(dateTimeFormat)
 
 	// 各値をintにパース
-	sexCode, err := strconv.ParseInt(request.FormValue("SexCode"), 10, 8)
+	sexCode, err := strconv.ParseInt(request.FormValue("sex_code"), 10, 8)
 	if err != nil {
 		fmt.Println("cannot Convert SexCode")
 	}
-	prefCode, err := strconv.ParseInt(request.FormValue("PrefCode"), 10, 32)
+	prefCode, err := strconv.ParseInt(request.FormValue("pref_code"), 10, 32)
 	if err != nil {
 		fmt.Println("cannot Convert PrefCode")
 	}
-	cityCode, err := strconv.ParseInt(request.FormValue("CityCode"), 10, 32)
+	cityCode, err := strconv.ParseInt(request.FormValue("city_code"), 10, 32)
 	if err != nil {
 		fmt.Println("cannot Convert CityCode")
 	}
-	wardCode, err := strconv.ParseInt(request.FormValue("WardCode"), 10, 32)
+	wardCode, err := strconv.ParseInt(request.FormValue("ward_code"), 10, 32)
 	if err != nil {
 		fmt.Println("cannot Convert WardCode")
 	}
@@ -62,5 +61,6 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 		log.Fatalf("err:", err)
 	}
 	userRepositopry.Create(connection, userData)
-	io.WriteString(w, "kitty kitty kitty")
+
+	http.Redirect(w, request, "http://localhost:3000/login", http.StatusSeeOther)
 }
