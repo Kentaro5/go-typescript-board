@@ -13,6 +13,7 @@ func main() {
 	//get := router.Methods(http.MethodGet).Subrouter()
 	router.HandleFunc("/signUp", Controllers.SignUp).Methods("POST")
 	router.HandleFunc("/login", Controllers.Login).Methods("POST")
+	router.HandleFunc("/login", Controllers.Login).Methods("OPTIONS")
 	router.HandleFunc("/", Controllers.Sets).Methods("POST")
 	router.HandleFunc("/", Controllers.Sets).Methods("OPTIONS")
 

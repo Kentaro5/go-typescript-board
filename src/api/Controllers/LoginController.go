@@ -1,7 +1,9 @@
 package Controllers
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,23 +34,56 @@ type AuthResponse struct {
 }
 
 type userFormData struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
 	fmt.Println("Login:")
-	body, err := ioutil.ReadAll(request.Body)
+	h := request.Header
+	fmt.Println(w, h)
+	header := w.Header()
+	header.Set("Content-Type", "application/json")
+	header.Set("Access-Control-Allow-Credentials", "true")
+	header.Set("Access-Control-Allow-Headers", "Content-Type, withCredentials")
+	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	header.Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	// In case you don't have separate CORS middleware
+	if request.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if request.Header.Get("Content-Type") != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	//To allocate slice for request body
+	length, err := strconv.Atoi(request.Header.Get("Content-Length"))
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	//Read body data to parse json
+	body := make([]byte, length)
+	length, err = request.Body.Read(body)
+	if err != nil && err != io.EOF {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	var userData userFormData
-	err = json.Unmarshal([]byte(body), &userData)
+	err = json.Unmarshal(body[:length], &userData)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(userData.Email)
+	fmt.Println("data:")
+	fmt.Printf("%v\n", userData)
+	fmt.Printf("%v\n", userData.Email)
+	fmt.Printf("%v\n", userData.Password)
+	fmt.Println("data:")
 
 	reqEmail := userData.Email
 	reqPassword := userData.Password
@@ -99,19 +134,41 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Println("cannotStatusInternalServerError")
-		// data.ToJSON(&GenericError{Error: err.Error()}, w)
+		//utils.ToJSON(&GenericError{Error: err.Error()}, w)
 		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
 		return
 	}
 	fmt.Println("AccessToken:")
 
-	w.WriteHeader(http.StatusOK)
-	// data.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
-	utils.ToJSON(&GenericResponse{
+	accessTokenCookie := &http.Cookie{
+		Name:     "accessToken", // <- should be any unique key you want
+		Value:    accessToken,   // <- the token after encoded by SecureCookie
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Domain:   "localhost",
+	}
+	http.SetCookie(w, accessTokenCookie)
+
+	refreshTokenCookie := &http.Cookie{
+		Name:     "refreshToken", // <- should be any unique key you want
+		Value:    refreshToken,   // <- the token after encoded by SecureCookie
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+		Domain:   "localhost",
+	}
+	http.SetCookie(w, refreshTokenCookie)
+
+	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
+	data := &GenericResponse{
 		Status:  true,
 		Message: "Successfully logged in",
 		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Name},
-	}, w)
+	}
+	utils.ToJSON(data, w)
 }
 
 func checkPassword(password string, requestPassword string) bool {
@@ -163,4 +220,16 @@ func PreflightSets(w http.ResponseWriter, request *http.Request) {
 	ping := Ping{http.StatusOK, "ok"}
 	res, _ := json.Marshal(ping)
 	w.Write(res)
+}
+
+func GetPage(w http.ResponseWriter, request *http.Request) {
+	// 1
+	cookie, err := request.Cookie("accessToken")
+
+	if err != nil {
+		log.Fatal("Cookie: ", err)
+	}
+	// 2
+	v := cookie.Value
+	fmt.Println(v)
 }
