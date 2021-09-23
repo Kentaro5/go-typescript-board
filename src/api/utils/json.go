@@ -17,3 +17,12 @@ func FromJSON(i interface{}, r io.Reader) error {
 	d := json.NewDecoder(r)
 	return d.Decode(i)
 }
+
+func GenerateJson(i interface{}) string {
+	out, err := json.Marshal(i)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(out)
+}
