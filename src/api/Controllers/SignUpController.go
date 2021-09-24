@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"api/Domain/Entity/userEntity"
-	"api/Domain/ValueObject/tokenValueObject"
 	"api/db"
 	"api/infrastructure/userRepositopry"
+	"api/utils"
 )
 
 func SignUp(w http.ResponseWriter, request *http.Request) {
@@ -48,7 +48,7 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 	}
 
 	userData.PasswordHash = hashedPassword
-	userData.TokenHash = tokenValueObject.GenerateRandomString(15)
+	userData.TokenHash = utils.GenerateRandomString(15)
 	userData.SexCode = uint8(sexCode)
 	userData.PrefCode = uint32(prefCode)
 	userData.CityCode = uint32(cityCode)

@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"api/Domain/ValueObject/tokenValueObject"
 	"api/db"
 	"api/infrastructure/userRepositopry"
 	"api/utils"
@@ -116,7 +115,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	fmt.Println("checkPassword:")
 
 	userID := strconv.Itoa(user.Id)
-	accessToken, err := tokenValueObject.GenerateAccessToken(userID)
+	accessToken, err := utils.GenerateAccessToken(userID)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)
@@ -128,7 +127,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Println("SexCode:")
 
-	refreshToken, err := tokenValueObject.GenerateRefreshToken(userID, user.TokenHash)
+	refreshToken, err := utils.GenerateRefreshToken(userID, user.TokenHash)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)

@@ -1,6 +1,5 @@
-package tokenValueObject
+package utils
 
-// TODO:役割的に、valueObjectではなくて、utilsに配置するべきだと思う。
 import (
 	"crypto/hmac"
 	"crypto/sha256"

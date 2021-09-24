@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"api/Domain/ValueObject/tokenValueObject"
 	"api/utils"
 )
 
@@ -36,7 +35,7 @@ func (amw *AuthMiddleware) ValidateAccessToken(next http.Handler) http.Handler {
 		}
 
 		// クッキーからアクセストークンを取得
-		cookie, err := tokenValueObject.GetToken(r)
+		cookie, err := utils.GetToken(r)
 		if err != nil {
 			http.Error(w, "Cookie not found", http.StatusForbidden)
 			utils.ToJSON(&GenericResponse{Status: false, Message: "Cookie not found"}, w)
@@ -44,7 +43,7 @@ func (amw *AuthMiddleware) ValidateAccessToken(next http.Handler) http.Handler {
 		}
 		amw.cookieAccessToken = cookie
 		fmt.Println(amw.cookieAccessToken)
-		userID, err := tokenValueObject.ValidateAccessToken(amw.cookieAccessToken)
+		userID, err := utils.ValidateAccessToken(amw.cookieAccessToken)
 		if err != nil {
 			// data.ToJSON(&GenericError{Error: err.Error()}, w)
 			utils.ToJSON(&GenericResponse{Status: false, Message: "Authentication failed. Invalid token"}, w)
