@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/Controllers"
+	"api/Middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"log"
@@ -9,13 +10,20 @@ import (
 )
 
 func main() {
+	amw := Middleware.AuthMiddleware{}
+	amw.Initialize()
 	router := mux.NewRouter()
 	//get := router.Methods(http.MethodGet).Subrouter()
 	router.HandleFunc("/signUp", Controllers.SignUp).Methods("POST")
 	router.HandleFunc("/login", Controllers.Login).Methods("POST")
 	router.HandleFunc("/login", Controllers.Login).Methods("OPTIONS")
-	router.HandleFunc("/", Controllers.Sets).Methods("POST")
-	router.HandleFunc("/", Controllers.Sets).Methods("OPTIONS")
+
+	optionsRouter := router.Methods(http.MethodOptions).Subrouter()
+	optionsRouter.HandleFunc("/", Controllers.Root)
+
+	getRouter := router.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", Controllers.Root)
+	getRouter.Use(amw.ValidateAccessToken)
 
 	//cors optionsGoes Below
 	c := cors.New(cors.Options{
