@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SignUp from '~/pages/sigunUp/index.vue'
 import Login from '~/pages/Login/index.vue'
+import Top from '~/pages/index.vue'
 
 // 2. Define some routes
 // Each route should map to a component.
@@ -8,6 +9,7 @@ import Login from '~/pages/Login/index.vue'
 const routes = [
     { path: '/signUp', component: SignUp },
     { path: '/login', component: Login },
+    { path: '/', component: Top },
 ]
 
 // 3. Create the router instance and pass the `routes` option
