@@ -56,8 +56,11 @@ export default defineComponent({
         withCredentials: true,
       };
       axios.post('http://localhost:8000/login', data, options).then(function (response) {
-        console.log('FFFFFFFF');
-        console.log(response.data);
+        const result = response.data
+        console.log(result.status);
+        if (result.status) {
+          location.href = '/'
+        }
       })
     }
 
