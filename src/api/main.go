@@ -1,25 +1,40 @@
 package main
 
 import (
-	"io"
+	"api/Controllers"
+	"api/Middleware"
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
+	"log"
 	"net/http"
 )
 
-type hotdog int
-
-func (m hotdog) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	switch req.URL.Path {
-	case "/dog":
-		io.WriteString(w, "doggy doggy doggy")
-	case "/cat":
-		io.WriteString(w, "kitty kitty kitty")
-	}
-}
-
 func main() {
-	var d hotdog
-	http.ListenAndServe(":8000", d)
+	amw := Middleware.AuthMiddleware{}
+	amw.Initialize()
+	router := mux.NewRouter()
+	//get := router.Methods(http.MethodGet).Subrouter()
+	router.HandleFunc("/signUp", Controllers.SignUp).Methods("POST")
+	router.HandleFunc("/login", Controllers.Login).Methods("POST")
+	router.HandleFunc("/login", Controllers.Login).Methods("OPTIONS")
+
+	optionsRouter := router.Methods(http.MethodOptions).Subrouter()
+	optionsRouter.HandleFunc("/", Controllers.Root)
+
+	getRouter := router.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", Controllers.Root)
+	getRouter.Use(amw.ValidateAccessToken)
+
+	//cors optionsGoes Below
+	c := cors.New(cors.Options{
+		AllowedOrigins:     []string{"http://localhost:3000"}, // All origins
+		AllowCredentials:   true,                              // Cookieを共有できるようにセットしておく。
+		AllowedMethods:     []string{"GET", "POST", "OPTIONS"},
+		OptionsPassthrough: true,
+	})
+	// handler := cors.Default().Handler(router)
+	handler := c.Handler(router)
+
+	// http.ListenAndServeで使用しているルーティングとポートを紐付けないと、動かない。
+	log.Fatal(http.ListenAndServe(":8000", handler))
 }

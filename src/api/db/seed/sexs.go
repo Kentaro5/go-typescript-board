@@ -1,7 +1,6 @@
 package seed
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -44,7 +43,7 @@ func (s Seed) SexSeed() {
 
 	for _, sexMasterData := range sexLists {
 		// prepare the statement
-		stmt, errors := s.db.Prepare(`INSERT INTO sex_mst(code, name, created_at, updated_at) VALUES (?,?,?,?)`)
+		stmt, _ := s.db.Prepare(`INSERT INTO sex_mst(code, name, created_at, updated_at) VALUES (?,?,?,?)`)
 		// execute query
 		_, err := stmt.Exec(
 			sexMasterData.code,
