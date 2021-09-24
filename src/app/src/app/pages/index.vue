@@ -1,6 +1,6 @@
 <template>
   <section class="hero is-primary is-fullheight">
-    <p>Your are Logged IN !!</p>
+    <p>Your are Logged IN !!!</p>
   </section>
 </template>
 
