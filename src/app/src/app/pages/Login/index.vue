@@ -29,9 +29,6 @@
                 </button>
               </div>
             </form>
-            <button class="button is-success" @click="sendGetRequest">
-              GET REQUEST
-            </button>
           </div>
         </div>
       </div>
@@ -48,6 +45,7 @@ export default defineComponent({
     const err = false
 
     const sendRequest = () => {
+      // TODO: あとで、フォームの値をバインドする。
       const data = {
         email: 'test@example.com',
         password: 'test',
@@ -60,20 +58,9 @@ export default defineComponent({
         }
       })
     }
-
-    const sendGetRequest = () => {
-      const options = {
-        withCredentials: true,
-      };
-      axios.get('http://localhost:8000/gets', options).then(function (response) {
-        console.log('FFFFFFFF');
-        console.log(response.data);
-      })
-    }
     return {
       err,
       sendRequest,
-      sendGetRequest,
     }
   },
 })
