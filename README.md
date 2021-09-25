@@ -13,6 +13,9 @@ go run main.go
 URL: https://bitbucket.org/liamstask/goose/src/master/
 
 ```
+// 最後まで終わるまで待つようにする。
+go install bitbucket.org/liamstask/goose/cmd/goose
+
 goose create AddSomeColumns sql
 goose: created db/migrations/20130106093224_AddSomeColumns.sql
 ```
