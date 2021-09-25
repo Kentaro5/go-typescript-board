@@ -166,7 +166,7 @@ func ValidateRefreshToken(tokenString string) (string, string, error) {
 
 // ValidateAccessToken parses and validates the given access token
 // returns the userId present in the token payload
-func ValidateAccessToken(tokenString string) (string, error) {
+func ValidateAccessToken(tokenString string) (*AccessTokenCustomClaims, error) {
 
 	token, err := jwt.ParseWithClaims(tokenString, &AccessTokenCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
@@ -185,15 +185,12 @@ func ValidateAccessToken(tokenString string) (string, error) {
 		}
 
 		accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PUBLIC_KEY")
-		fmt.Println("ACCESS_TOKEN_PUBLIC_KEY" + accessTokenKeyPath)
 		verifyBytes, err := ioutil.ReadFile(accessTokenKeyPath)
 		if err != nil {
 			fmt.Println("unable to read public key")
 			return nil, err
 		}
-		fmt.Println(verifyBytes)
 		verifyKey, err := jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-		fmt.Println(verifyKey)
 		if err != nil {
 			fmt.Println("unable to parse public key")
 
@@ -206,12 +203,14 @@ func ValidateAccessToken(tokenString string) (string, error) {
 
 	if err != nil {
 		fmt.Println("unable to parse claims")
-		return "", err
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*AccessTokenCustomClaims)
+
 	if !ok || !token.Valid || claims.UserID == "" || claims.KeyType != "access" {
-		return "", errors.New("invalid token: authentication failed")
+		return nil, errors.New("invalid token: authentication failed")
 	}
-	return claims.UserID, nil
+
+	return claims, nil
 }
