@@ -28,7 +28,6 @@ func main() {
 	//cors optionsGoes Below
 	c := cors.New(cors.Options{
 		AllowedOrigins:     []string{"http://localhost:3000"}, // All origins
-		AllowCredentials:   true,                              // Cookieを共有できるようにセットしておく。
 		AllowedMethods:     []string{"GET", "POST", "OPTIONS"},
 		OptionsPassthrough: true,
 	})

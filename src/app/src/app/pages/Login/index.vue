@@ -52,14 +52,11 @@ export default defineComponent({
         email: 'test@example.com',
         password: 'test',
       }
-      const options = {
-        withCredentials: true,
-      };
-      axios.post('http://localhost:8000/login', data, options).then(function (response) {
+      axios.post('http://localhost:8000/login', data).then(function (response) {
         const result = response.data
-        console.log(result.status);
+        console.log(result);
         if (result.status) {
-          location.href = '/'
+          //location.href = '/'
         }
       })
     }
