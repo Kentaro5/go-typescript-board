@@ -52,8 +52,10 @@ export default defineComponent({
       }
       axios.post('http://localhost:8000/login', data).then(function (response) {
         const result = response.data
-        console.log(result);
-        if (result.status) {
+        console.log(result.data.refresh_token);
+        if (result.status === 200) {
+          localStorage.setItem('accessToken', result.data.access_token)
+          localStorage.setItem('refreshToken', result.data.refresh_token)
           //location.href = '/'
         }
       })

@@ -114,7 +114,6 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		// data.ToJSON(&GenericError{Error: err.Error()}, w)
-		fmt.Println("cannot Convert SexCode")
 		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
 		return
 	}
