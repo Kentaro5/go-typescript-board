@@ -24,6 +24,7 @@ import (
 type AccessTokenCustomClaims struct {
 	UserID  int
 	KeyType string
+	Exp     int64
 	jwt.StandardClaims
 }
 
@@ -32,6 +33,7 @@ type RefreshTokenCustomClaims struct {
 	UserID    int
 	CustomKey string
 	KeyType   string
+	Exp       int64
 	jwt.StandardClaims
 }
 
@@ -51,13 +53,15 @@ func GenerateRandomString(n int) string {
 // アクセストークンの生成
 func GenerateAccessToken(userID int) (string, error) {
 	tokenType := "access"
-	tokenExpiredTime, _ := strconv.ParseInt(os.Getenv("JWT_EXPIRATION"), 10, 64)
+	tokenExpiredTime, _ := strconv.ParseInt(os.Getenv("JWT_ACCESS_TOKEN_EXPIRATION"), 10, 64)
+	expiredTime := time.Now().Add(time.Minute * time.Duration(tokenExpiredTime)).Unix()
 	accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
 	claims := AccessTokenCustomClaims{
 		userID,
 		tokenType,
+		expiredTime,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(tokenExpiredTime)).Unix(),
+			ExpiresAt: expiredTime,
 			Issuer:    "go-typescript-board.auth.service",
 		},
 	}
@@ -82,11 +86,14 @@ func GenerateRefreshToken(userId int, tokenHash string) (string, error) {
 	cusKey := generateCustomKey(userId, tokenHash)
 	tokenType := "refresh"
 	accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
+	tokenExpiredTime, _ := strconv.ParseInt(os.Getenv("JWT_REFRESH_TOKEN_EXPIRATION"), 10, 64)
+	expiredTime := time.Now().Add(time.Minute * time.Duration(tokenExpiredTime)).Unix()
 
 	claims := RefreshTokenCustomClaims{
 		userId,
 		cusKey,
 		tokenType,
+		expiredTime,
 		jwt.StandardClaims{
 			Issuer: "go-typescript-board.auth.service",
 		},
