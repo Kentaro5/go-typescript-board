@@ -108,11 +108,11 @@ func GenerateRefreshToken(userId string, tokenHash string) (string, error) {
 	return accessToken, err
 }
 
-func generateCustomKey(userID string, tokenHash string) string {
+func generateCustomKey(userID int, tokenHash string) string {
 
-	// data := userID + tokenHash
+	strUserId := strconv.Itoa(userID)
 	h := hmac.New(sha256.New, []byte(tokenHash))
-	h.Write([]byte(userID))
+	h.Write([]byte(strUserId))
 	sha := hex.EncodeToString(h.Sum(nil))
 	return sha
 }
@@ -208,7 +208,7 @@ func ValidateAccessToken(tokenString string) (*AccessTokenCustomClaims, error) {
 
 	claims, ok := token.Claims.(*AccessTokenCustomClaims)
 
-	if !ok || !token.Valid || claims.UserID == "" || claims.KeyType != "access" {
+	if !ok || !token.Valid || claims.UserID == 0 || claims.KeyType != "access" {
 		return nil, errors.New("invalid token: authentication failed")
 	}
 
