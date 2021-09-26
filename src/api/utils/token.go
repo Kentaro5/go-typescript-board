@@ -49,7 +49,7 @@ func GenerateRandomString(n int) string {
 }
 
 // アクセストークンの生成
-func GenerateAccessToken(userID string) (string, error) {
+func GenerateAccessToken(userID int) (string, error) {
 	tokenType := "access"
 	tokenExpiredTime, _ := strconv.ParseInt(os.Getenv("JWT_EXPIRATION"), 10, 64)
 	accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
@@ -78,7 +78,7 @@ func GenerateAccessToken(userID string) (string, error) {
 	return accessToken, err
 }
 
-func GenerateRefreshToken(userId string, tokenHash string) (string, error) {
+func GenerateRefreshToken(userId int, tokenHash string) (string, error) {
 	cusKey := generateCustomKey(userId, tokenHash)
 	tokenType := "refresh"
 	accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
