@@ -22,14 +22,14 @@ import (
 
 // アクセストークンで必要な要素
 type AccessTokenCustomClaims struct {
-	UserID  string
+	UserID  int
 	KeyType string
 	jwt.StandardClaims
 }
 
 // リフレッシュトークンで必要な要素
 type RefreshTokenCustomClaims struct {
-	UserID    string
+	UserID    int
 	CustomKey string
 	KeyType   string
 	jwt.StandardClaims
