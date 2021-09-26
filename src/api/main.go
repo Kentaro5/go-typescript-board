@@ -18,6 +18,9 @@ func main() {
 	router.HandleFunc("/login", Controllers.Login).Methods("POST")
 	router.HandleFunc("/login", Controllers.Login).Methods("OPTIONS")
 
+	postRouter := router.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/refresh-token", Controllers.CreateAccessTokenByRefreshToken)
+
 	optionsRouter := router.Methods(http.MethodOptions).Subrouter()
 	optionsRouter.HandleFunc("/", Controllers.Root)
 
