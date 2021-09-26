@@ -27,14 +27,19 @@ type GenericResponse struct {
 }
 
 type AuthResponse struct {
-	RefreshToken string `json:"refresh_token"`
-	AccessToken  string `json:"access_token"`
-	Username     string `json:"username"`
+	RefreshToken string       `json:"refresh_token"`
+	AccessToken  string       `json:"access_token"`
+	User         ResponseUser `json:"user"`
 }
 
 type userFormData struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type ResponseUser struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
@@ -107,8 +112,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Println("checkPassword:")
 
-	userID := strconv.Itoa(user.Id)
-	accessToken, err := utils.GenerateAccessToken(userID)
+	accessToken, err := utils.GenerateAccessToken(user.Id)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)
@@ -119,7 +123,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Println("SexCode:")
 
-	refreshToken, err := utils.GenerateRefreshToken(userID, user.TokenHash)
+	refreshToken, err := utils.GenerateRefreshToken(user.Id, user.TokenHash)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)
@@ -133,7 +137,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
-		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Name},
+		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, User: ResponseUser{Id: user.Id, Name: user.Name}},
 	}
 	utils.ToJSON(data, w)
 }
