@@ -29,9 +29,6 @@
                 </button>
               </div>
             </form>
-            <button class="button is-success" @click="sendGetRequest">
-              GET REQUEST
-            </button>
           </div>
         </div>
       </div>
@@ -48,35 +45,25 @@ export default defineComponent({
     const err = false
 
     const sendRequest = () => {
+      // TODO: あとで、フォームの値をバインドする。
       const data = {
         email: 'test@example.com',
         password: 'test',
       }
-      const options = {
-        withCredentials: true,
-      };
-      axios.post('http://localhost:8000/login', data, options).then(function (response) {
+      axios.post('http://localhost:8000/login', data).then(function (response) {
         const result = response.data
-        console.log(result.status);
-        if (result.status) {
+        console.log(result.data);
+        if (result.status === 200) {
+          localStorage.setItem('accessToken', result.data.access_token)
+          localStorage.setItem('refreshToken', result.data.refresh_token)
+          localStorage.setItem('user', result.data.user)
           location.href = '/'
         }
-      })
-    }
-
-    const sendGetRequest = () => {
-      const options = {
-        withCredentials: true,
-      };
-      axios.get('http://localhost:8000/gets', options).then(function (response) {
-        console.log('FFFFFFFF');
-        console.log(response.data);
       })
     }
     return {
       err,
       sendRequest,
-      sendGetRequest,
     }
   },
 })

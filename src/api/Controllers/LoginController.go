@@ -21,20 +21,25 @@ type Ping struct {
 
 // GenericResponse is the format of our response
 type GenericResponse struct {
-	Status  bool        `json:"status"`
+	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
 
 type AuthResponse struct {
-	RefreshToken string `json:"refresh_token"`
-	AccessToken  string `json:"access_token"`
-	Username     string `json:"username"`
+	RefreshToken string       `json:"refresh_token"`
+	AccessToken  string       `json:"access_token"`
+	User         ResponseUser `json:"user"`
 }
 
 type userFormData struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type ResponseUser struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
@@ -43,8 +48,6 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	fmt.Println(w, h)
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
-	header.Set("Access-Control-Allow-Credentials", "true")
-	header.Set("Access-Control-Allow-Headers", "Content-Type, withCredentials")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	header.Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	// In case you don't have separate CORS middleware
@@ -78,11 +81,6 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("data:")
-	fmt.Printf("%v\n", userData)
-	fmt.Printf("%v\n", userData.Email)
-	fmt.Printf("%v\n", userData.Password)
-	fmt.Println("data:")
 
 	reqEmail := userData.Email
 	reqPassword := userData.Password
@@ -114,58 +112,32 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Println("checkPassword:")
 
-	userID := strconv.Itoa(user.Id)
-	accessToken, err := utils.GenerateAccessToken(userID)
+	accessToken, err := utils.GenerateAccessToken(user.Id)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		// data.ToJSON(&GenericError{Error: err.Error()}, w)
-		fmt.Println("cannot Convert SexCode")
 		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
 		return
 	}
 	fmt.Println("SexCode:")
 
-	refreshToken, err := utils.GenerateRefreshToken(userID, user.TokenHash)
+	refreshToken, err := utils.GenerateRefreshToken(user.Id, user.TokenHash)
 	if err != nil {
 		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Println("cannotStatusInternalServerError")
 		//utils.ToJSON(&GenericError{Error: err.Error()}, w)
 		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
 		return
 	}
-	fmt.Println("AccessToken:")
-
-	accessTokenCookie := &http.Cookie{
-		Name:     "accessToken", // <- should be any unique key you want
-		Value:    accessToken,   // <- the token after encoded by SecureCookie
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Domain:   "localhost",
-	}
-	http.SetCookie(w, accessTokenCookie)
-
-	refreshTokenCookie := &http.Cookie{
-		Name:     "refreshToken", // <- should be any unique key you want
-		Value:    refreshToken,   // <- the token after encoded by SecureCookie
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
-		Domain:   "localhost",
-	}
-	http.SetCookie(w, refreshTokenCookie)
 
 	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
 	data := &GenericResponse{
-		Status:  true,
+		Status:  http.StatusOK,
 		Message: "Successfully logged in",
-		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Name},
+		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, User: ResponseUser{Id: user.Id, Name: user.Name}},
 	}
 	utils.ToJSON(data, w)
 }

@@ -6,4 +6,4 @@ FROM golang:${GO_VERSION}-alpine
 RUN apk update && apk add git alpine-sdk
 
 # ワーキングディレクトリの設定
-WORKDIR /go/src
+WORKDIR /src/api

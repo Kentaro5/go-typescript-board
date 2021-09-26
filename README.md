@@ -7,6 +7,19 @@ make bash-api
 go run main.go
 ```
 
+## Migrationコマンド
+
+使用しているGooseのDoc
+URL: https://bitbucket.org/liamstask/goose/src/master/
+
+```
+// 最後まで終わるまで待つようにする。
+go install bitbucket.org/liamstask/goose/cmd/goose
+
+goose create AddSomeColumns sql
+goose: created db/migrations/20130106093224_AddSomeColumns.sql
+```
+
 Vue側
 ```
 make bash-app
