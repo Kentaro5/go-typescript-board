@@ -1,12 +1,14 @@
 <template>
   <section class="hero is-primary is-fullheight">
     <p>Your are Logged IN !!!</p>
+    <button @click="createNewAccessToken">Send Request</button>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import {checkAuth} from "../composables/auth/auth";
+import {createNewAccessToken} from "../composables/jwt/jwt";
 
 export default defineComponent({
   setup: () => {
@@ -14,6 +16,7 @@ export default defineComponent({
     checkAuth();
 
     return {
+      createNewAccessToken,
       err,
     }
   },
