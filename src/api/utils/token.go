@@ -128,14 +128,25 @@ func GetToken(r *http.Request) (string, error) {
 
 // ValidateRefreshToken parses and validates the given refresh token
 // returns the userId and customkey present in the token payload
-func ValidateRefreshToken(tokenString string) (string, string, error) {
+func ValidateRefreshToken(tokenString string) (*RefreshTokenCustomClaims, error) {
 
 	token, err := jwt.ParseWithClaims(tokenString, &RefreshTokenCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			fmt.Println("Unexpected signing method in auth token")
 			return nil, errors.New("Unexpected signing method in auth token")
 		}
-		accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PRIVATE_KEY")
+
+		filePath, err := filepath.Abs(".env")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		err = godotenv.Load(fmt.Sprintf(filePath))
+		if err != nil {
+			log.Fatalf("godotenvが使用できません。godotenvをロードしてください。", err)
+		}
+
+		accessTokenKeyPath := os.Getenv("ACCESS_TOKEN_PUBLIC_KEY")
 		verifyBytes, err := ioutil.ReadFile(accessTokenKeyPath)
 		if err != nil {
 			fmt.Println("unable to read public key")
@@ -147,21 +158,21 @@ func ValidateRefreshToken(tokenString string) (string, string, error) {
 			fmt.Println("unable to parse public key")
 			return nil, err
 		}
-
 		return verifyKey, nil
 	})
 
 	if err != nil {
 		fmt.Println("unable to parse claims")
-		return "", "", err
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*RefreshTokenCustomClaims)
-	if !ok || !token.Valid || claims.UserID == "" || claims.KeyType != "refresh" {
+	if !ok || !token.Valid || claims.UserID == 0 || claims.KeyType != "refresh" {
 		fmt.Println("could not extract claims from token")
-		return "", "", errors.New("invalid token: authentication failed")
+		return nil, errors.New("invalid token: authentication failed")
 	}
-	return claims.UserID, claims.CustomKey, nil
+
+	return claims, nil
 }
 
 // ValidateAccessToken parses and validates the given access token
