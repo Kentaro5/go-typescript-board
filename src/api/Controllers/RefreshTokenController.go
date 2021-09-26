@@ -51,7 +51,7 @@ func CreateAccessTokenByRefreshToken(w http.ResponseWriter, request *http.Reques
 
 	// リフレッシュトークンが失効されていないかチェック。
 	disabled, _ := disabledRefreshTokenRepository.Exist(connection, refreshToken)
-	if disabled {
+	if !disabled {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "You are using disabled RefreshToken."}, w)
 		return
 	}
