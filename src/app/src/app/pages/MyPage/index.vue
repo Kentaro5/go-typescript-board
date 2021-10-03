@@ -1,0 +1,48 @@
+<template>
+  <section class="hero is-primary is-fullheight">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+            <div class="box" v-if="result">
+              <div class="field">
+                <label class="label">名前</label>
+                <div class="control">
+                  <p>{{user.name}}</p>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">メールアドレス</label>
+                <div class="control">
+                  <p>{{user.email}}</p>
+                </div>
+              </div>
+              <button class="button is-primary">編集</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script lang="ts">
+import {defineComponent} from 'vue'
+import {useUser} from "../../composables/user/user";
+
+export default defineComponent({
+  setup: () => {
+    const err = false
+    const { user, result } = useUser()
+
+    return {
+      err,
+      user,
+      result
+    }
+  },
+})
+</script>
+
+<style scoped lang="css">
+</style>
