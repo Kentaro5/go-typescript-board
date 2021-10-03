@@ -2,10 +2,8 @@ package Middleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"api/utils"
 )
