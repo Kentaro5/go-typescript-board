@@ -79,7 +79,23 @@ func FetchByEmail(db *sql.DB, email string) (*User, error) {
 }
 
 func FetchByUserId(db *sql.DB, userId int) (*User, error) {
-	var sql string = "SELECT * FROM " + userTableName + " WHERE id = ?"
+	userResult := "user.id, user.name, user.email, user.sex_code, user.pref_code, user.city_code, user.ward_code, user.created_at, "
+	sexMstResult := "sex_mst.code, sex_mst.name, "
+	prefMstResult := "pref_mst.pref_code, pref_mst.pref, "
+	cityMstResult := "city_mst.city_code, city_mst.city, "
+	wardMstResult := "ward_mst.ward_code, ward_mst.ward "
+	expectedResult := userResult + sexMstResult + prefMstResult + cityMstResult + wardMstResult
+	var sql string = "SELECT DISTINCT " + expectedResult + "FROM " + userTableName + " as user "
+	sql = sql + "JOIN sex_mst "
+	sql = sql + "ON user.sex_code = sex_mst.code "
+	sql = sql + "JOIN pref_mst "
+	sql = sql + "ON user.pref_code = pref_mst.pref_code "
+	sql = sql + "JOIN city_mst "
+	sql = sql + "ON user.city_code = city_mst.city_code "
+	sql = sql + "JOIN ward_mst "
+	sql = sql + "ON user.ward_code = ward_mst.ward_code "
+	sql = sql + "WHERE user.id = ?"
+	fmt.Println(sql)
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		return nil, err
@@ -94,6 +110,11 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 	defer rows.Close()
 
 	var user User
+	var userSex UserSex
+	var userPrefecture UserPrefecture
+	var userCity UserCity
+	var userWard UserWard
+
 	for rows.Next() {
 		// Goではループの終了後に、必ずエラーチェックを行う。
 		// 全ての行が処理されるまで、ループが継続されるとは限らないため。
@@ -103,20 +124,28 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 			&user.Id,
 			&user.Name,
 			&user.Email,
-			&user.PasswordHash,
-			&user.TokenHash,
 			&user.SexCode,
 			&user.PrefCode,
 			&user.CityCode,
 			&user.WardCode,
-			&user.RememberToken,
 			&user.CreatedAt,
-			&user.UpdatedAt,
-			&user.DeletedAt,
+			&userSex.Code,
+			&userSex.Name,
+			&userPrefecture.PrefCode,
+			&userPrefecture.Name,
+			&userCity.CityCode,
+			&userCity.Name,
+			&userWard.WardCode,
+			&userWard.Name,
 		)
 		if err != nil {
 			log.Fatal(err)
 		}
+		// 参考記事：https://stackoverflow.com/questions/45637808/golang-db-query-with-sql-join
+		user.Sex = append(user.Sex, userSex)
+		user.Prefecture = append(user.Prefecture, userPrefecture)
+		user.City = append(user.City, userCity)
+		user.Ward = append(user.Ward, userWard)
 	}
 	err = rows.Err()
 	if err != nil {
