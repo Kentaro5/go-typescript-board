@@ -1,4 +1,4 @@
-import {createNewAccessToken} from "../jwt/jwt";
+import {createNewAccessToken, decodeJwt, isExpiredAccessToken} from "../jwt/jwt";
 import {onBeforeMount} from 'vue'
 
 export const checkAuth = () => {
