@@ -39,16 +39,16 @@ type User = {
 
 export const useUser = () => {
     const user = ref<User | null>(null)
-    let result = ref<boolean>(false)
+    let useUserResult = ref<boolean>(false)
     onBeforeMount(async () => {
         checkAuth()
         const accessJwtToken: string | null = localStorage.getItem('accessToken')
         if (accessJwtToken === null) {
-            result.value = false
+            useUserResult.value = false
             return
         }
-        const accessToken = decodeJwt(accessJwtToken)
-        const userId = accessToken.UserID
+        const accessToken:string = decodeJwt(accessJwtToken)
+        const userId:Number = accessToken.UserID
         try {
             // Set config defaults when creating the instance
             const instance = axios.create({
@@ -73,12 +73,12 @@ export const useUser = () => {
                 wardCode: response.data.data.ward_code,
                 registeredDate: response.data.data.created_at,
             }
-            result.value = true
+            useUserResult.value = true
         } catch (error) {
-            result.value = false
+            useUserResult.value = false
             return
         }
     })
 
-    return {result: readonly(result), user: readonly(user)}
+    return {useUserResult: readonly(useUserResult), user: readonly(user)}
 }

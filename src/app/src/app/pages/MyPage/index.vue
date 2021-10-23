@@ -4,7 +4,7 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-5-tablet is-4-desktop is-3-widescreen">
-            <div class="box" v-if="result">
+            <div class="box" v-if="useUserResult">
               <div class="field">
                 <label class="label">名前</label>
                 <div class="control">
@@ -17,7 +17,7 @@
                   <p>{{user.email}}</p>
                 </div>
               </div>
-              <button class="button is-primary">編集</button>
+              <router-link to="/myPage/edit" class="button is-primary">編集</router-link>
             </div>
           </div>
         </div>
@@ -33,12 +33,12 @@ import {useUser} from "../../composables/user/user";
 export default defineComponent({
   setup: () => {
     const err = false
-    const { user, result } = useUser()
+    const { user, useUserResult } = useUser()
 
     return {
       err,
       user,
-      result
+      useUserResult,
     }
   },
 })
