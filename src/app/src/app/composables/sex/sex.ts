@@ -27,7 +27,7 @@ type sexLists = {
 }
 
 export const useSex = () => {
-    const sexes = ref<Sex | null>(null)
+    const sexes = ref<Sex[] | null>(null)
     let useSexResult = ref<boolean>(false)
     onBeforeMount(async () => {
         checkAuth()
@@ -36,7 +36,6 @@ export const useSex = () => {
             useSexResult.value = false
             return
         }
-        console.log('useSex');
         const accessToken: string = decodeJwt(accessJwtToken)
         try {
             // Set config defaults when creating the instance
@@ -53,13 +52,11 @@ export const useSex = () => {
                     code: sex.sex_code,
                     name: sex.sex_name,
                 }))
-            console.log(response.data.data.sexes);
             sexes.value = sexLists
             useSexResult.value = true
         } catch (error) {
             useSexResult.value = false
             console.log(error);
-            console.log('catch');
             return
         }
     })
