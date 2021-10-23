@@ -3,6 +3,7 @@ import SignUp from '~/pages/SigunUp/index.vue'
 import Login from '~/pages/Login/index.vue'
 import Top from '~/pages/index.vue'
 import MyPage from '~/pages/MyPage/index.vue'
+import EditMyPage from '~/pages/MyPage/edit.vue'
 
 // 2. Define some routes
 // Each route should map to a component.
@@ -12,6 +13,7 @@ const routes = [
     { path: '/login', component: Login },
     { path: '/', component: Top },
     { path: '/myPage', component: MyPage },
+    { path: '/myPage/edit', component: EditMyPage },
 ]
 
 // 3. Create the router instance and pass the `routes` option
