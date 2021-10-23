@@ -169,7 +169,7 @@ func ValidateRefreshToken(tokenString string) (*RefreshTokenCustomClaims, error)
 	})
 
 	if err != nil {
-		fmt.Println("unable to parse claims")
+		fmt.Println("unable to parse claims", err)
 		return nil, err
 	}
 
@@ -220,7 +220,7 @@ func ValidateAccessToken(tokenString string) (*AccessTokenCustomClaims, error) {
 	})
 
 	if err != nil {
-		fmt.Println("unable to parse claims")
+		fmt.Println("unable to parse claims", err)
 		return nil, err
 	}
 

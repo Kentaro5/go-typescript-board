@@ -32,7 +32,6 @@ type response struct {
 }
 
 func GetUser(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("unable to parse claims")
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -81,5 +80,6 @@ func GetUser(w http.ResponseWriter, request *http.Request) {
 			CreatedAt:  user.CreatedAt,
 		},
 	}
+	fmt.Println("ToJSON", data)
 	utils.ToJSON(data, w)
 }

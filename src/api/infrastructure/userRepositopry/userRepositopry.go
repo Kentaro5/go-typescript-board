@@ -95,7 +95,6 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 	sql = sql + "JOIN ward_mst "
 	sql = sql + "ON user.ward_code = ward_mst.ward_code "
 	sql = sql + "WHERE user.id = ?"
-	fmt.Println(sql)
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		return nil, err
