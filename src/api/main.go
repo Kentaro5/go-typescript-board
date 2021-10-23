@@ -24,10 +24,12 @@ func main() {
 	optionsRouter := router.Methods(http.MethodOptions).Subrouter()
 	optionsRouter.HandleFunc("/", Controllers.Root)
 	optionsRouter.HandleFunc("/user/{userId}", Controllers.GetUser)
+	optionsRouter.HandleFunc("/sex", Controllers.GetSexLists)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", Controllers.Root)
 	getRouter.HandleFunc("/user/{userId}", Controllers.GetUser)
+	getRouter.HandleFunc("/sex", Controllers.GetSexLists)
 	getRouter.Use(amw.ValidateAccessToken)
 
 	//cors optionsGoes Below
