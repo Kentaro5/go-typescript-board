@@ -71,7 +71,7 @@
                     </div>
                     <label for="city_code" class="label">市</label>
                     <div class="select">
-                      <select v-if="isCityDataSet" name="city_code">
+                      <select v-if="isCityDataSet" name="city_code" @change="executeChangeWard($event)">
                         <option value=""></option>
                         <option v-for="(cityList) in cityLists"
                                 :key="cityList.id"
@@ -88,9 +88,16 @@
                   <div class="control">
                     <label for="ward_code" class="label">区</label>
                     <div class="select">
-                      <select name="ward_code">
+                      <select v-if="isWardsDataSet" name="ward_code">
                         <option value=""></option>
-                        <option value="11011">札幌市</option>
+                        <option v-for="(wardList) in wardLists"
+                                :key="wardList.id"
+                                :value="wardList.code">
+                          {{wardList.name}}
+                        </option>
+                      </select>
+                      <select v-else name="ward_code" class="select-disabled">
+                        <option value=""></option>
                       </select>
                     </div>
 
@@ -117,12 +124,16 @@ import {useUser} from "../../composables/user/user";
 import {useSex} from "../../composables/sex/sex";
 import {usePrefectures} from "../../composables/areas/prefecture";
 import {useCities} from "../../composables/areas/city";
+import {useWards} from "../../composables/areas/ward";
 
 export default defineComponent({
   setup: () => {
     const err: boolean = false
     const isCityDataSet = ref<boolean>(false)
+    const isWardsDataSet = ref<boolean>(false)
+
     const cityLists = ref<[] | null>(null)
+    const wardLists = ref<[] | null>(null)
 
     const { user, useUserResult } = useUser()
     const { sexes, useSexResult } = useSex()
@@ -134,18 +145,30 @@ export default defineComponent({
       cityLists.value = cities
     }
 
+    const executeChangeWard = async (event: Event) => {
+      const cityCode = parseInt(event.target.value)
+      console.log('FFFFFFFF');
+      console.log(cityCode);
+      const {wards, changeWardResult} = await useWards(cityCode)
+      isWardsDataSet.value = changeWardResult
+      wardLists.value = wards
+    }
+
     return {
       err,
       user,
       sexes,
       prefectures,
       cityLists,
+      wardLists,
       useUserResult,
       useSexResult,
       usePrefecturesResult,
       prefectureIndex,
       executeChangeCity,
+      executeChangeWard,
       isCityDataSet,
+      isWardsDataSet,
     }
   },
 })
