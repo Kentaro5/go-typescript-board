@@ -1,19 +1,22 @@
 package Controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 
 	"api/db"
-	"api/infrastructure/sexRepository"
+	"api/infrastructure/prefectureRepository"
 	"api/utils"
 )
 
-type sexListsResponse struct {
-	Sexes []sexRepository.Sex `json:"sexes"`
+type prefecturesResponse struct {
+	Prefectures []prefectureRepository.Prefecture `json:"prefectures"`
 }
 
-func GetSexLists(w http.ResponseWriter, request *http.Request) {
+func GetPrefectureLists(w http.ResponseWriter, request *http.Request) {
+	fmt.Println("prefectures2222")
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -29,18 +32,22 @@ func GetSexLists(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Fatalf("err:", err)
 	}
-
-	sexes, err := sexRepository.Fetch(connection)
+	fmt.Println("prefectures2222")
+	prefectures, err := prefectureRepository.Fetch(connection)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid User."}, w)
 		return
 	}
 
+	fmt.Println("prefectures", prefectures)
+
+	fmt.Println(reflect.TypeOf(prefectures))
+
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
-		Data: &sexListsResponse{
-			Sexes: sexes.SexLists,
+		Data: &prefecturesResponse{
+			Prefectures: prefectures.PrefectureLists,
 		},
 	}
 

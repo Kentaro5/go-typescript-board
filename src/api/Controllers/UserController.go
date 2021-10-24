@@ -1,7 +1,6 @@
 package Controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -80,6 +79,6 @@ func GetUser(w http.ResponseWriter, request *http.Request) {
 			CreatedAt:  user.CreatedAt,
 		},
 	}
-	fmt.Println("ToJSON", data)
+
 	utils.ToJSON(data, w)
 }
