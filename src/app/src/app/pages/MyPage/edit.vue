@@ -55,9 +55,13 @@
                     </div>
                     <label for="pref_code" class="label">都道府県</label>
                     <div class="select">
-                      <select name="pref_code">
+                      <select name="pref_code" @change="executeChangeCity($event)">
                         <option value="">都道府県を選択してください</option>
-                        <option :value="prefecture.code" v-for="(prefecture, index) in prefectures" :key="index">{{prefecture.name}}</option>
+                        <option v-for="(prefecture, prefectureIndex) in prefectures"
+                                :key="prefectureIndex"
+                                :value="prefecture.code">
+                          {{prefecture.name}}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -67,11 +71,19 @@
                     </div>
                     <label for="city_code" class="label">市</label>
                     <div class="select">
-                      <select name="city_code">
+                      <select v-if="isCityDataSet" name="city_code">
                         <option value=""></option>
-                        <option value="11002">札幌市</option>
+                        <option v-for="(cityList) in cityLists"
+                                :key="cityList.id"
+                                :value="cityList.code">
+                          {{cityList.name}}
+                        </option>
+                      </select>
+                      <select v-else name="city_code" class="select-disabled">
+                        <option value=""></option>
                       </select>
                     </div>
+
                   </div>
                   <div class="control">
                     <label for="ward_code" class="label">区</label>
@@ -100,29 +112,49 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, ref} from 'vue'
 import {useUser} from "../../composables/user/user";
 import {useSex} from "../../composables/sex/sex";
 import {usePrefectures} from "../../composables/areas/prefecture";
+import {useCities} from "../../composables/areas/city";
 
 export default defineComponent({
   setup: () => {
-    const err = false
+    const err: boolean = false
+    const isCityDataSet = ref<boolean>(false)
+    const cityLists = ref<[] | null>(null)
+
     const { user, useUserResult } = useUser()
     const { sexes, useSexResult } = useSex()
-    const { prefectures, usePrefecturesResult } = usePrefectures()
+    const { prefectures, usePrefecturesResult, prefectureIndex } = usePrefectures()
+    const executeChangeCity = async (event: Event) => {
+      const prefCode = parseInt(event.target.value)
+      const {cities, changeCityResult} = await useCities(prefCode)
+      isCityDataSet.value = changeCityResult
+      cityLists.value = cities
+    }
 
     return {
       err,
       user,
       sexes,
       prefectures,
+      cityLists,
       useUserResult,
       useSexResult,
       usePrefecturesResult,
+      prefectureIndex,
+      executeChangeCity,
+      isCityDataSet,
     }
   },
 })
 </script>
 
-<style scoped lang="css"></style>
+<style scoped lang="css">
+.select-disabled {
+  pointer-events: none;
+  width: 100px;
+  background-color: #f7f7f7;
+}
+</style>

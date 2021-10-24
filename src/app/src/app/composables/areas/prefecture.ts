@@ -1,5 +1,5 @@
 import axios from "axios";
-import {onBeforeMount, readonly, ref} from "vue";
+import {onBeforeMount, readonly, ref, watch} from "vue";
 import {checkAuth} from "../auth/auth";
 import {decodeJwt} from "../jwt/jwt";
 
@@ -22,8 +22,9 @@ type Prefecture = {
 }
 
 export const usePrefectures = () => {
-    const prefectures = ref<Sex[] | null>(null)
+    const prefectures = ref<Prefecture[] | null>(null)
     let usePrefecturesResult = ref<boolean>(false)
+    let prefectureIndex:Number = 0
     onBeforeMount(async () => {
         checkAuth()
         const accessJwtToken: string | null = localStorage.getItem('accessToken')
@@ -57,5 +58,5 @@ export const usePrefectures = () => {
         }
     })
 
-    return {usePrefecturesResult: readonly(usePrefecturesResult), prefectures: readonly(prefectures)}
+    return {usePrefecturesResult: readonly(usePrefecturesResult), prefectures: readonly(prefectures), prefectureIndex}
 }
