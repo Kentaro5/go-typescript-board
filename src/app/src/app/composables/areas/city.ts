@@ -1,5 +1,5 @@
 import axios from "axios";
-import {onBeforeMount, readonly, ref} from "vue";
+import {readonly} from "vue";
 import {checkAuth} from "../auth/auth";
 import {decodeJwt} from "../jwt/jwt";
 

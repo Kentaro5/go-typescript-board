@@ -57,8 +57,8 @@
                     <div class="select">
                       <select name="pref_code" @change="executeChangeCity($event)">
                         <option value="">都道府県を選択してください</option>
-                        <option v-for="(prefecture, prefectureIndex) in prefectures"
-                                :key="prefectureIndex"
+                        <option v-for="(prefecture) in prefectures"
+                                :key="prefecture.id"
                                 :value="prefecture.code">
                           {{prefecture.name}}
                         </option>
@@ -137,8 +137,17 @@ export default defineComponent({
 
     const { user, useUserResult } = useUser()
     const { sexes, useSexResult } = useSex()
-    const { prefectures, usePrefecturesResult, prefectureIndex } = usePrefectures()
+    const { prefectures, usePrefecturesResult } = usePrefectures()
+
+    const resetAreaData = () => {
+      cityLists.value = []
+      wardLists.value = []
+      isCityDataSet.value = false
+      isWardsDataSet.value = false
+    }
+
     const executeChangeCity = async (event: Event) => {
+      resetAreaData()
       const prefCode = parseInt(event.target.value)
       const {cities, changeCityResult} = await useCities(prefCode)
       isCityDataSet.value = changeCityResult
@@ -147,8 +156,6 @@ export default defineComponent({
 
     const executeChangeWard = async (event: Event) => {
       const cityCode = parseInt(event.target.value)
-      console.log('FFFFFFFF');
-      console.log(cityCode);
       const {wards, changeWardResult} = await useWards(cityCode)
       isWardsDataSet.value = changeWardResult
       wardLists.value = wards
@@ -164,7 +171,6 @@ export default defineComponent({
       useUserResult,
       useSexResult,
       usePrefecturesResult,
-      prefectureIndex,
       executeChangeCity,
       executeChangeWard,
       isCityDataSet,
@@ -177,7 +183,6 @@ export default defineComponent({
 <style scoped lang="css">
 .select-disabled {
   pointer-events: none;
-  width: 100px;
   background-color: #f7f7f7;
 }
 </style>

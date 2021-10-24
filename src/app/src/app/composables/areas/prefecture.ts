@@ -24,7 +24,6 @@ type Prefecture = {
 export const usePrefectures = () => {
     const prefectures = ref<Prefecture[] | null>(null)
     let usePrefecturesResult = ref<boolean>(false)
-    let prefectureIndex:Number = 0
     onBeforeMount(async () => {
         checkAuth()
         const accessJwtToken: string | null = localStorage.getItem('accessToken')
@@ -58,5 +57,5 @@ export const usePrefectures = () => {
         }
     })
 
-    return {usePrefecturesResult: readonly(usePrefecturesResult), prefectures: readonly(prefectures), prefectureIndex}
+    return {usePrefecturesResult: readonly(usePrefecturesResult), prefectures: readonly(prefectures)}
 }
