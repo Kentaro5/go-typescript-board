@@ -32,7 +32,6 @@
                         <option :value="sex.code" v-for="(sex, index) in sexes" :key="index" :selected="sex.code === user.sexCode">{{sex.name}}</option>
                       </select>
                     </div>
-
                   </div>
                 </div>
                 <div class="field ">
