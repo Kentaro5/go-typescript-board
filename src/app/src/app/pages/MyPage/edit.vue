@@ -57,7 +57,7 @@
                     <div class="select">
                       <select name="pref_code">
                         <option value="">都道府県を選択してください</option>
-                        <option value="10006">北海道</option>
+                        <option :value="prefecture.code" v-for="(prefecture, index) in prefectures" :key="index">{{prefecture.name}}</option>
                       </select>
                     </div>
                   </div>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="field is-grouped">
                   <div class="control">
-                    <button class="button is-link">登録
+                    <button class="button is-link">更新
                     </button>
                   </div>
                 </div>
@@ -103,23 +103,26 @@
 import {defineComponent} from 'vue'
 import {useUser} from "../../composables/user/user";
 import {useSex} from "../../composables/sex/sex";
+import {usePrefectures} from "../../composables/areas/prefecture";
 
 export default defineComponent({
   setup: () => {
     const err = false
     const { user, useUserResult } = useUser()
     const { sexes, useSexResult } = useSex()
+    const { prefectures, usePrefecturesResult } = usePrefectures()
 
     return {
       err,
       user,
       sexes,
+      prefectures,
       useUserResult,
       useSexResult,
+      usePrefecturesResult,
     }
   },
 })
 </script>
 
-<style scoped lang="css">
-</style>
+<style scoped lang="css"></style>
