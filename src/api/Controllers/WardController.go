@@ -1,21 +1,23 @@
 package Controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"api/db"
-	"api/infrastructure/cityRepository"
+	"api/infrastructure/wardRepository"
 	"api/utils"
 	"github.com/gorilla/mux"
 )
 
-type citiesResponse struct {
-	Cities []cityRepository.City `json:"cities"`
+type wardsResponse struct {
+	Wards []wardRepository.Ward `json:"wards"`
 }
 
-func GetCityLists(w http.ResponseWriter, request *http.Request) {
+func GetWardLists(w http.ResponseWriter, request *http.Request) {
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -33,23 +35,26 @@ func GetCityLists(w http.ResponseWriter, request *http.Request) {
 	}
 
 	params := mux.Vars(request)
-	prefCode, err := strconv.Atoi(params["prefCode"])
+	cityCode, err := strconv.Atoi(params["cityCode"])
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "invalid parameters"}, w)
 		return
 	}
 
-	cities, err := cityRepository.FetchByPrefCode(connection, prefCode)
+	wards, err := wardRepository.FetchByCityCode(connection, cityCode)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid User."}, w)
 		return
 	}
 
+	fmt.Println(reflect.TypeOf(wards))
+	fmt.Println("wards", wards)
+
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
-		Data: &citiesResponse{
-			Cities: cities.CityLists,
+		Data: &wardsResponse{
+			Wards: wards.WardLists,
 		},
 	}
 
