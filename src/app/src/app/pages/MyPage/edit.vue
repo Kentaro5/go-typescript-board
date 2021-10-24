@@ -29,7 +29,7 @@
                     <div class="select">
                       <select name="sex_code" v-if="useSexResult">
                         <option value="">性別を選択してください。</option>
-                        <option :value="sex.code" v-for="(sex, index) in sexes" :key="index">{{sex.name}}</option>
+                        <option :value="sex.code" v-for="(sex, index) in sexes" :key="index" :selected="sex.code === user.sexCode">{{sex.name}}</option>
                       </select>
                     </div>
 
@@ -59,7 +59,9 @@
                         <option value="">都道府県を選択してください</option>
                         <option v-for="(prefecture) in prefectures"
                                 :key="prefecture.id"
-                                :value="prefecture.code">
+                                :value="prefecture.code"
+                                :selected="prefecture.code === user.prefectureCode"
+                        >
                           {{prefecture.name}}
                         </option>
                       </select>
@@ -75,15 +77,26 @@
                         <option value=""></option>
                         <option v-for="(cityList) in cityLists"
                                 :key="cityList.id"
-                                :value="cityList.code">
+                                :value="cityList.code"
+                                :selected="cityList.code === user.cityCode"
+                        >
                           {{cityList.name}}
                         </option>
                       </select>
-                      <select v-else name="city_code" class="select-disabled">
+                      <select v-else-if="user.cityLists.length > 0" name="city_code">
+                        <option value=""></option>
+                        <option v-for="(cityList) in user.cityLists"
+                                :key="cityList.id"
+                                :value="cityList.code"
+                                :selected="cityList.code === user.cityCode"
+                        >
+                          {{cityList.name}}
+                        </option>
+                      </select>
+                      <select v-else name="ward_code" class="select-disabled">
                         <option value=""></option>
                       </select>
                     </div>
-
                   </div>
                   <div class="control">
                     <label for="ward_code" class="label">区</label>
@@ -92,7 +105,19 @@
                         <option value=""></option>
                         <option v-for="(wardList) in wardLists"
                                 :key="wardList.id"
-                                :value="wardList.code">
+                                :value="wardList.code"
+                                :selected="wardList.code === user.wardCode"
+                        >
+                          {{wardList.name}}
+                        </option>
+                      </select>
+                      <select v-else-if="user.wardLists.length > 0" name="ward_code">
+                        <option value=""></option>
+                        <option v-for="(wardList) in user.wardLists"
+                                :key="wardList.id"
+                                :value="wardList.code"
+                                :selected="wardList.code === user.wardCode"
+                        >
                           {{wardList.name}}
                         </option>
                       </select>
@@ -100,7 +125,6 @@
                         <option value=""></option>
                       </select>
                     </div>
-
                   </div>
                 </div>
                 <div class="field is-grouped">
@@ -120,7 +144,7 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
-import {useUser} from "../../composables/user/user";
+import {useEditUser} from "../../composables/user/user";
 import {useSex} from "../../composables/sex/sex";
 import {usePrefectures} from "../../composables/areas/prefecture";
 import {useCities} from "../../composables/areas/city";
@@ -135,11 +159,13 @@ export default defineComponent({
     const cityLists = ref<[] | null>(null)
     const wardLists = ref<[] | null>(null)
 
-    const { user, useUserResult } = useUser()
+    const { user, useUserResult } = useEditUser()
     const { sexes, useSexResult } = useSex()
     const { prefectures, usePrefecturesResult } = usePrefectures()
 
     const resetAreaData = () => {
+      user.value.cityLists = []
+      user.value.wardLists = []
       cityLists.value = []
       wardLists.value = []
       isCityDataSet.value = false

@@ -59,5 +59,5 @@ export const useWards = async (cityCode: Number | null) => {
         return
     }
 
-    return {wards: readonly(wards), changeWardResult: readonly(changeWardResult)}
+    return {wards: wards, changeWardResult: readonly(changeWardResult)}
 }

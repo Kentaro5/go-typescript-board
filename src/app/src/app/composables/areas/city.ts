@@ -56,5 +56,5 @@ export const useCities = async (prefCode: Number | null) => {
         return
     }
 
-    return {cities: readonly(cities), changeCityResult: readonly(changeCityResult)}
+    return {cities: cities, changeCityResult: readonly(changeCityResult)}
 }
