@@ -2,6 +2,7 @@ import {createNewAccessToken, decodeJwt, isExpiredAccessToken} from "../jwt/jwt"
 import {onBeforeMount} from 'vue'
 
 export const checkAuth = () => {
+    // TODO: onBeforeMountで使うのが正しくないため、あとで修正
     onBeforeMount(async () => {
         const accessJwtToken: string | null = localStorage.getItem('accessToken')
         const refreshJwtToken: string | null = localStorage.getItem('refreshToken')
