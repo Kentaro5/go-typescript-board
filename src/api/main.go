@@ -26,12 +26,14 @@ func main() {
 	optionsRouter.HandleFunc("/user/{userId}", Controllers.GetUser)
 	optionsRouter.HandleFunc("/sex", Controllers.GetSexLists)
 	optionsRouter.HandleFunc("/prefecture", Controllers.GetPrefectureLists)
+	optionsRouter.HandleFunc("/city/{prefCode}", Controllers.GetCityLists)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", Controllers.Root)
 	getRouter.HandleFunc("/user/{userId}", Controllers.GetUser)
 	getRouter.HandleFunc("/sex", Controllers.GetSexLists)
 	getRouter.HandleFunc("/prefecture", Controllers.GetPrefectureLists)
+	getRouter.HandleFunc("/city/{prefCode}", Controllers.GetCityLists)
 	getRouter.Use(amw.ValidateAccessToken)
 
 	//cors optionsGoes Below

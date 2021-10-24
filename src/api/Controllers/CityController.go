@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
+	"strconv"
 
 	"api/db"
-	"api/infrastructure/prefectureRepository"
+	"api/infrastructure/cityRepository"
 	"api/utils"
+	"github.com/gorilla/mux"
 )
 
-type prefecturesResponse struct {
-	Prefectures []prefectureRepository.Prefecture `json:"prefectures"`
+type citiesResponse struct {
+	Cities []cityRepository.City `json:"cities"`
 }
 
-func GetPrefectureLists(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("prefectures2222")
+func GetCityLists(w http.ResponseWriter, request *http.Request) {
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -32,19 +34,27 @@ func GetPrefectureLists(w http.ResponseWriter, request *http.Request) {
 		log.Fatalf("err:", err)
 	}
 
-	prefectures, err := prefectureRepository.Fetch(connection)
+	params := mux.Vars(request)
+	prefCode, err := strconv.Atoi(params["prefCode"])
+	if err != nil {
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "invalid parameters"}, w)
+		return
+	}
+
+	cities, err := cityRepository.FetchByPrefCode(connection, prefCode)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid User."}, w)
 		return
 	}
 
-	//fmt.Println(reflect.TypeOf(prefectures))
+	fmt.Println(reflect.TypeOf(cities))
+	fmt.Println("cities", cities)
 
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
-		Data: &prefecturesResponse{
-			Prefectures: prefectures.PrefectureLists,
+		Data: &citiesResponse{
+			Cities: cities.CityLists,
 		},
 	}
 
