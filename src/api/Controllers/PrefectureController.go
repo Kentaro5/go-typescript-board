@@ -1,7 +1,6 @@
 package Controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -15,7 +14,6 @@ type prefecturesResponse struct {
 }
 
 func GetPrefectureLists(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("prefectures2222")
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")

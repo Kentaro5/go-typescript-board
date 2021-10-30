@@ -1,10 +1,8 @@
 package Controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 	"strconv"
 
 	"api/db"
@@ -46,9 +44,6 @@ func GetWardLists(w http.ResponseWriter, request *http.Request) {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid User."}, w)
 		return
 	}
-
-	fmt.Println(reflect.TypeOf(wards))
-	fmt.Println("wards", wards)
 
 	data := &GenericResponse{
 		Status:  http.StatusOK,
