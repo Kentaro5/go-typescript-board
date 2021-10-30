@@ -33,12 +33,12 @@ type response struct {
 	CreatedAt  string  `json:"created_at"`
 }
 
-func GetUser(w http.ResponseWriter, request *http.Request) {
+func OptionUser(w http.ResponseWriter, request *http.Request) {
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	header.Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	header.Set("Access-Control-Allow-Headers", "Authorization")
+	header.Set("Access-Control-Allow-Methods", "GET, PATCH, OPTIONS")
+	header.Set("Access-Control-Allow-Headers", "Authorization, Content-Type") // PATCHメソッドの場合は、content-typeも付与する。
 
 	// In case you don't have separate CORS middleware
 	if request.Method == http.MethodOptions {

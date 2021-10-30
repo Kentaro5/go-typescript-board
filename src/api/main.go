@@ -44,7 +44,7 @@ func main() {
 	//cors optionsGoes Below
 	c := cors.New(cors.Options{
 		AllowedOrigins:     []string{"http://localhost:3000"}, // All origins
-		AllowedMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods:     []string{"GET", "POST", "OPTIONS", "PATCH"},
 		OptionsPassthrough: true,
 	})
 	// handler := cors.Default().Handler(router)
