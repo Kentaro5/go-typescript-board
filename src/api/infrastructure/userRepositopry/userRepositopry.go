@@ -153,3 +153,41 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 
 	return &user, nil
 }
+
+func UpdateByUserId(db *sql.DB, userId int, data UpdateUser) error {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	var sql string = "UPDATE " + userTableName + " "
+	sql = sql + "set name = ?,  email = ?, sex_code = ?, pref_code = ?, city_code = ?, ward_code = ? "
+	sql = sql + "where id = ?"
+
+	// トランザクション管理処理
+	defer func() {
+		if err != nil {
+			log.Fatal(err)
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	_, err = tx.Exec(
+		sql,
+		data.Name,
+		data.Email,
+		data.SexCode,
+		data.PrefCode,
+		data.CityCode,
+		data.WardCode,
+		userId,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return err
+}

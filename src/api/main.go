@@ -23,7 +23,7 @@ func main() {
 
 	optionsRouter := router.Methods(http.MethodOptions).Subrouter()
 	optionsRouter.HandleFunc("/", Controllers.Root)
-	optionsRouter.HandleFunc("/user/{userId}", Controllers.GetUser)
+	optionsRouter.HandleFunc("/user/{userId}", Controllers.OptionUser)
 	optionsRouter.HandleFunc("/sex", Controllers.GetSexLists)
 	optionsRouter.HandleFunc("/prefecture", Controllers.GetPrefectureLists)
 	optionsRouter.HandleFunc("/city/{prefCode}", Controllers.GetCityLists)
@@ -37,6 +37,9 @@ func main() {
 	getRouter.HandleFunc("/city/{prefCode}", Controllers.GetCityLists)
 	getRouter.HandleFunc("/ward/{cityCode}", Controllers.GetWardLists)
 	getRouter.Use(amw.ValidateAccessToken)
+
+	patchRouter := router.Methods(http.MethodPatch).Subrouter()
+	patchRouter.HandleFunc("/user/{userId}", Controllers.UpdateUser)
 
 	//cors optionsGoes Below
 	c := cors.New(cors.Options{

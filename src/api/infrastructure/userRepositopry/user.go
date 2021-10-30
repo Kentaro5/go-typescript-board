@@ -39,3 +39,12 @@ type UserWard struct {
 	WardCode *uint32
 	Name     *string
 }
+
+type UpdateUser struct {
+	Name     string  `json:"name"`
+	SexCode  uint8   `json:"sex_code"`
+	Email    string  `json:"email"`
+	PrefCode uint32  `json:"pref_code"`
+	CityCode uint32  `json:"city_code"`
+	WardCode *uint32 `json:"ward_code"`
+}
