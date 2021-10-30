@@ -1,5 +1,5 @@
 import axios from "axios";
-import {onBeforeMount, readonly, ref} from "vue";
+import {onBeforeMount, readonly, ref, reactive} from "vue";
 import {checkAuth} from "../auth/auth";
 import {decodeJwt} from "../jwt/jwt";
 import {useCities} from "../areas/city";
@@ -25,6 +25,14 @@ type GetUserApiResponse = {
     statusText: string
 }
 
+type PatchUserApiResponse = {
+    config: object
+    data: ""
+    headers: object
+    status: Number
+    statusText: string
+}
+
 type User = {
     name: string
     email: string
@@ -37,6 +45,10 @@ type User = {
     ward: string | null
     wardCode: Number | null
     registeredDate: string
+}
+
+type Updated = {
+    status: 'updated' | 'error' | 'unupdated'
 }
 
 export const useUser = () => {
@@ -87,6 +99,18 @@ export const useUser = () => {
 
 export const useEditUser = () => {
     const user = ref<User | null>(null)
+    const userSexCode = ref<Number | null>(null)
+    const userPrefectureCode = ref<Number | string>('')
+    const userCityCode = ref<Number | string>('')
+    const userWardCode = ref<Number | string>('')
+    const updated = reactive<Updated>({
+        status: 'unupdated'
+    })
+
+    const changeUpdatedStatus = (status) => {
+        updated.status = status
+    }
+
     let useUserResult = ref<boolean>(false)
     onBeforeMount(async () => {
         checkAuth()
@@ -125,6 +149,11 @@ export const useEditUser = () => {
                 registeredDate: response.data.data.created_at,
             }
             useUserResult.value = true
+            userSexCode.value = user.value.sexCode
+            userPrefectureCode.value = user.value.prefectureCode
+            userCityCode.value = user.value.cityCode
+            userWardCode.value = user.value.wardCode
+
             console.log(user.value.prefectureCode);
             const {cities} = await useCities(user.value.prefectureCode)
             user.value.cityLists = cities
@@ -140,5 +169,57 @@ export const useEditUser = () => {
         }
     })
 
-    return {useUserResult: readonly(useUserResult), user: user}
+    const updateUserInfo = async () => {
+        checkAuth()
+        const accessJwtToken: string | null = localStorage.getItem('accessToken')
+        if (accessJwtToken === null) {
+            useUserResult.value = false
+            return
+        }
+        const accessToken:string = decodeJwt(accessJwtToken)
+        const userId:Number = accessToken.UserID
+
+        try {
+            // Set config defaults when creating the instance
+            const instance = axios.create({
+                baseURL: 'http://localhost:8000',
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer ' + accessJwtToken,
+                },
+            });
+
+            const data = {
+                'name': user.value.name,
+                'sex_code': userSexCode.value,
+                'email': user.value.email,
+                'pref_code': userPrefectureCode.value,
+                'city_code': userCityCode.value,
+                'ward_code': userWardCode.value,
+            }
+
+            const response: PatchUserApiResponse = await instance.patch('/user/' + userId, data)
+
+            if (response.status === 200) {
+                updated.status = 'updated'
+            } else {
+                updated.status = 'error'
+            }
+        } catch (error) {
+            updated.status = 'error'
+            return
+        }
+    }
+
+    return {
+        useUserResult: readonly(useUserResult),
+        user,
+        updateUserInfo,
+        changeUpdatedStatus,
+        userSexCode,
+        userPrefectureCode,
+        userCityCode,
+        userWardCode,
+        updated,
+    }
 }

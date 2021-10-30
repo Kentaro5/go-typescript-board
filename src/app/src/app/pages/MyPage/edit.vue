@@ -2,12 +2,16 @@
   <section class="hero is-primary is-fullheight">
     <div class="hero-body">
       <div class="container">
+        <div class="notification is-primary is-light" v-if="updated.status === 'updated'">
+          <button class="delete" @click="changeUpdatedStatus('unupdated')"></button>
+          <p>データを更新しました。</p>
+        </div>
         <div class="columns is-centered">
           <div class="column is-5-tablet is-4-desktop is-3-widescreen">
             <div class="box" v-if="useUserResult">
-              <form class="form-horizontal" method="POST" action="http://localhost:8000/signUp">
+              <form class="form-horizontal" @submit.prevent="updateUserInfo">
                 <input type="hidden" name="_token">
-                <div class="field ">
+                <div class="field">
                   <div class="notification is-danger" v-if="err">
                     <strong></strong>
                   </div>
@@ -16,7 +20,7 @@
                     <input id="name" name="name"
                            class="input" type="text"
                            placeholder="ユーザー名を半角英数字で入力してください。"
-                           :value="user.name"
+                           v-model="user.name"
                     >
                   </div>
                 </div>
@@ -27,7 +31,7 @@
                   <label for="sex_code" class="label">性別</label>
                   <div class="control">
                     <div class="select">
-                      <select name="sex_code" v-if="useSexResult">
+                      <select name="sex_code" v-if="useSexResult" v-model="userSexCode">
                         <option value="">性別を選択してください。</option>
                         <option :value="sex.code" v-for="(sex, index) in sexes" :key="index" :selected="sex.code === user.sexCode">{{sex.name}}</option>
                       </select>
@@ -43,7 +47,7 @@
                     <input id="email" name="email"
                            class="input" type="text"
                            placeholder="example@example.com"
-                           :value="user.email"
+                           v-model="user.email"
                     >
                   </div>
                 </div>
@@ -54,7 +58,7 @@
                     </div>
                     <label for="pref_code" class="label">都道府県</label>
                     <div class="select">
-                      <select name="pref_code" @change="executeChangeCity($event)">
+                      <select name="pref_code" @change="executeChangeCity($event)" v-model="userPrefectureCode">
                         <option value="">都道府県を選択してください</option>
                         <option v-for="(prefecture) in prefectures"
                                 :key="prefecture.id"
@@ -72,7 +76,7 @@
                     </div>
                     <label for="city_code" class="label">市</label>
                     <div class="select">
-                      <select v-if="isCityDataSet" name="city_code" @change="executeChangeWard($event)">
+                      <select v-if="isCityDataSet" name="city_code" @change="executeChangeWard($event)" v-model="userCityCode">
                         <option value=""></option>
                         <option v-for="(cityList) in cityLists"
                                 :key="cityList.id"
@@ -82,7 +86,7 @@
                           {{cityList.name}}
                         </option>
                       </select>
-                      <select v-else-if="user.cityLists.length > 0" name="city_code">
+                      <select v-else-if="user.cityLists.length > 0" name="city_code" v-model="userCityCode">
                         <option value=""></option>
                         <option v-for="(cityList) in user.cityLists"
                                 :key="cityList.id"
@@ -100,7 +104,7 @@
                   <div class="control">
                     <label for="ward_code" class="label">区</label>
                     <div class="select">
-                      <select v-if="isWardsDataSet" name="ward_code">
+                      <select v-if="isWardsDataSet" name="ward_code" v-model="userWardCode">
                         <option value=""></option>
                         <option v-for="(wardList) in wardLists"
                                 :key="wardList.id"
@@ -110,7 +114,7 @@
                           {{wardList.name}}
                         </option>
                       </select>
-                      <select v-else-if="user.wardLists.length > 0" name="ward_code">
+                      <select v-else-if="user.wardLists.length > 0" name="ward_code" v-model="userWardCode">
                         <option value=""></option>
                         <option v-for="(wardList) in user.wardLists"
                                 :key="wardList.id"
@@ -158,9 +162,26 @@ export default defineComponent({
     const cityLists = ref<[] | null>(null)
     const wardLists = ref<[] | null>(null)
 
-    const { user, useUserResult } = useEditUser()
+    const prefectureValue = ref<Number | null>(null)
+    const cityValue = ref<Number | null>(null)
+    const wardValue = ref<Number | null>(null)
+
+    const {
+      user,
+      useUserResult,
+      updateUserInfo,
+      changeUpdatedStatus,
+      userSexCode,
+      userPrefectureCode,
+      userCityCode,
+      userWardCode,
+      updated,
+    } = useEditUser()
     const { sexes, useSexResult } = useSex()
     const { prefectures, usePrefecturesResult } = usePrefectures()
+    cityValue.value = user.cityCode
+    wardValue.value = user.wardCode
+    prefectureValue.value = user.prefectureCode
 
     const resetAreaData = () => {
       user.value.cityLists = []
@@ -169,21 +190,31 @@ export default defineComponent({
       wardLists.value = []
       isCityDataSet.value = false
       isWardsDataSet.value = false
+      userCityCode.value = ''
+      userWardCode.value = ''
     }
 
     const executeChangeCity = async (event: Event) => {
       resetAreaData()
-      const prefCode = parseInt(event.target.value)
-      const {cities, changeCityResult} = await useCities(prefCode)
-      isCityDataSet.value = changeCityResult
-      cityLists.value = cities
+      const prefCodeText = event.target.value
+      if (prefCodeText !== '') {
+        const prefCode = parseInt(prefCodeText)
+        const {cities, changeCityResult} = await useCities(prefCode)
+        isCityDataSet.value = changeCityResult
+        console.log(cities);
+        cityLists.value = cities
+      }
     }
 
     const executeChangeWard = async (event: Event) => {
-      const cityCode = parseInt(event.target.value)
-      const {wards, changeWardResult} = await useWards(cityCode)
-      isWardsDataSet.value = changeWardResult
-      wardLists.value = wards
+      console.log(event.target.value);
+      const cityCodeText = event.target.value
+      if (cityCodeText !== '') {
+        const cityCode = parseInt(cityCodeText)
+        const {wards, changeWardResult} = await useWards(cityCode)
+        isWardsDataSet.value = changeWardResult
+        wardLists.value = wards
+      }
     }
 
     return {
@@ -198,8 +229,15 @@ export default defineComponent({
       usePrefecturesResult,
       executeChangeCity,
       executeChangeWard,
+      updateUserInfo,
+      changeUpdatedStatus,
       isCityDataSet,
       isWardsDataSet,
+      userSexCode,
+      userPrefectureCode,
+      userCityCode,
+      userWardCode,
+      updated,
     }
   },
 })
