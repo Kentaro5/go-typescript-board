@@ -150,13 +150,6 @@ func UpdateUser(w http.ResponseWriter, request *http.Request) {
 		panic(err)
 	}
 
-	reqName := updateData.Name
-	reqSexCode := updateData.SexCode
-	reqEmail := updateData.Email
-	reqPrefCode := updateData.PrefCode
-	reqCityCode := updateData.CityCode
-	reqWardCode := updateData.WardCode
-
 	connection, err := db.NewConnection()
 	if err != nil {
 		log.Fatalf("err:", err)
@@ -166,34 +159,6 @@ func UpdateUser(w http.ResponseWriter, request *http.Request) {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Failed Update User."}, w)
 		return
 	}
-
-	// user, err := userRepositopry.FetchByUserId(connection, userId)
-	// if err != nil && user.Id != userId {
-	// 	utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid User."}, w)
-	// 	return
-	// }
-
-	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
-	// data := &GenericResponse{
-	// 	Status:  http.StatusOK,
-	// 	Message: "Successfully logged in",
-	// 	Data: &response{
-	// 		Id:         user.Id,
-	// 		Name:       user.Name,
-	// 		Email:      user.Email,
-	// 		SexCode:    user.SexCode,
-	// 		Sex:        user.Sex[0].Name,
-	// 		PrefCode:   user.PrefCode,
-	// 		Prefecture: user.Prefecture[0].Name,
-	// 		CityCode:   user.CityCode,
-	// 		City:       user.City[0].Name,
-	// 		WardCode:   user.WardCode,
-	// 		Ward:       user.Ward[0].Name,
-	// 		CreatedAt:  user.CreatedAt,
-	// 	},
-	// }
-	//
-	// utils.ToJSON(data, w)
 }
 
 func ChangeUserPassword(w http.ResponseWriter, request *http.Request) {

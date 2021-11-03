@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -42,7 +41,6 @@ type ResponseUser struct {
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
-	h := request.Header
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -161,15 +159,4 @@ func PreflightSets(w http.ResponseWriter, request *http.Request) {
 	ping := Ping{http.StatusOK, "ok"}
 	res, _ := json.Marshal(ping)
 	w.Write(res)
-}
-
-func GetPage(w http.ResponseWriter, request *http.Request) {
-	// 1
-	cookie, err := request.Cookie("accessToken")
-
-	if err != nil {
-		log.Fatal("Cookie: ", err)
-	}
-	// 2
-	v := cookie.Value
 }

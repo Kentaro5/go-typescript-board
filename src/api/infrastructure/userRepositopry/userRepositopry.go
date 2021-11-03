@@ -2,9 +2,7 @@ package userRepositopry
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"reflect"
 )
 
 const userTableName string = "user_tbl"
@@ -192,7 +190,6 @@ func UpdateByUserId(db *sql.DB, userId int, data UpdateUser) error {
 
 func UpdatePasswordByUserId(db *sql.DB, userId int, password string) error {
 	tx, err := db.Begin()
-	seedType := reflect.TypeOf(tx)
 	if err != nil {
 		log.Fatal(err)
 		return err
