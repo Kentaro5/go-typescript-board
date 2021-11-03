@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
 	"api/db"
 	"api/infrastructure/userRepositopry"
 	"api/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Ping struct {
@@ -43,9 +41,6 @@ type ResponseUser struct {
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("Login:")
-	h := request.Header
-	fmt.Println(w, h)
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -85,55 +80,40 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	reqEmail := userData.Email
 	reqPassword := userData.Password
 
-	fmt.Println("NewConnection:" + reqEmail)
-	fmt.Println("NewConnection:" + reqPassword)
-
 	connection, err := db.NewConnection()
 	if err != nil {
-		log.Fatalf("err:", err)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "DB Connection Failed."}, w)
+		return
 	}
-	fmt.Println("NewConnection:")
 
 	user, err := userRepositopry.FetchByEmail(connection, reqEmail)
 	if err != nil {
-		//errMsg := err.Error()
-		//data.ToJSON(&GenericResponse{Status: false, Message: "Unable to retrieve user from database.Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Login Failed."}, w)
 		return
 	}
-	fmt.Println("userRepositopry:")
 
-	fmt.Println(&user)
-	fmt.Println(reqPassword)
-
-	result := checkPassword(user.PasswordHash, reqPassword)
-	fmt.Println(result)
-	if !result {
+	err = utils.CheckPassword(user.PasswordHash, reqPassword)
+	if err != nil {
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Password not corrected."}, w)
 		return
 	}
-	fmt.Println("checkPassword:")
 
 	accessToken, err := utils.GenerateAccessToken(user.Id)
 	if err != nil {
-		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		// data.ToJSON(&GenericError{Error: err.Error()}, w)
-		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Filed Generate Access Token."}, w)
 		return
 	}
-	fmt.Println("SexCode:")
 
 	refreshToken, err := utils.GenerateRefreshToken(user.Id, user.TokenHash)
 	if err != nil {
-		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		//utils.ToJSON(&GenericError{Error: err.Error()}, w)
-		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "falied Generate Refresh Token."}, w)
 		return
 	}
 
-	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
@@ -142,21 +122,10 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	utils.ToJSON(data, w)
 }
 
-func checkPassword(password string, requestPassword string) bool {
-	// テキストのパスワードと、ハッシュ化されたパスワードを比較する
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(requestPassword))
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
 func Sets(w http.ResponseWriter, request *http.Request) {
 
 	// In case you don't have separate CORS middleware
 	if request.Method == http.MethodOptions {
-		fmt.Println(http.SameSiteNoneMode)
 		header := w.Header()
 		header.Set("Access-Control-Allow-Credentials", "true")
 		header.Set("Access-Control-Allow-Headers", "Content-Type, withCredentials")
@@ -175,7 +144,6 @@ func Sets(w http.ResponseWriter, request *http.Request) {
 		Domain:   "localhost",
 	}
 	http.SetCookie(w, cookie)
-	fmt.Println(http.SameSiteNoneMode)
 
 	ping := Ping{http.StatusOK, "ok"}
 	res, _ := json.Marshal(ping)
@@ -191,16 +159,4 @@ func PreflightSets(w http.ResponseWriter, request *http.Request) {
 	ping := Ping{http.StatusOK, "ok"}
 	res, _ := json.Marshal(ping)
 	w.Write(res)
-}
-
-func GetPage(w http.ResponseWriter, request *http.Request) {
-	// 1
-	cookie, err := request.Cookie("accessToken")
-
-	if err != nil {
-		log.Fatal("Cookie: ", err)
-	}
-	// 2
-	v := cookie.Value
-	fmt.Println(v)
 }

@@ -73,7 +73,6 @@ func GenerateAccessToken(userID int) (string, error) {
 
 	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
 	if err != nil {
-		fmt.Println(err)
 		return "", errors.New("could not generate access token. please try again later")
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -139,7 +138,6 @@ func ValidateRefreshToken(tokenString string) (*RefreshTokenCustomClaims, error)
 
 	token, err := jwt.ParseWithClaims(tokenString, &RefreshTokenCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			fmt.Println("Unexpected signing method in auth token")
 			return nil, errors.New("Unexpected signing method in auth token")
 		}
 
@@ -169,7 +167,7 @@ func ValidateRefreshToken(tokenString string) (*RefreshTokenCustomClaims, error)
 	})
 
 	if err != nil {
-		fmt.Println("unable to parse claims")
+		fmt.Println("unable to parse claims", err)
 		return nil, err
 	}
 
@@ -220,7 +218,7 @@ func ValidateAccessToken(tokenString string) (*AccessTokenCustomClaims, error) {
 	})
 
 	if err != nil {
-		fmt.Println("unable to parse claims")
+		fmt.Println("unable to parse claims", err)
 		return nil, err
 	}
 

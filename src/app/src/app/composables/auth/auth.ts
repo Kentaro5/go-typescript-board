@@ -1,7 +1,8 @@
-import {createNewAccessToken} from "../jwt/jwt";
+import {createNewAccessToken, decodeJwt, isExpiredAccessToken} from "../jwt/jwt";
 import {onBeforeMount} from 'vue'
 
 export const checkAuth = () => {
+    // TODO: onBeforeMountで使うのが正しくないため、あとで修正
     onBeforeMount(async () => {
         const accessJwtToken: string | null = localStorage.getItem('accessToken')
         const refreshJwtToken: string | null = localStorage.getItem('refreshToken')
@@ -23,38 +24,4 @@ export const checkAuth = () => {
             }
         }
     })
-}
-
-/**
- * Jwtのコードをデコードする。
- * @param token
- */
-const decodeJwt = (token: string) => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
-}
-
-/**
- * アクセストークンの有効期限をチェックする
- * 有効期限が切れていた場合は、trueを返す
- * @param expiredTime
- */
-const isExpiredAccessToken = (expiredTime: number) => {
-    // Dateオブジェクトを作成
-    const dateObject: Date = new Date() ;
-    // 一度ミリ秒単位で、UNIXタイムスタンプを取得する
-    const milliSecondTimeStamp: number = dateObject.getTime() ;
-    // そのあと、秒単位UNIXタイムスタンプを生成
-    const secondTimeStamp: number = Math.floor( milliSecondTimeStamp / 1000 ) ;
-
-    if (expiredTime > secondTimeStamp) {
-        return false
-    }
-
-    return true
 }

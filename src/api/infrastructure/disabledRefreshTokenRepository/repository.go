@@ -2,7 +2,6 @@ package disabledRefreshTokenRepository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 )
@@ -50,11 +49,9 @@ func Exist(db *sql.DB, refreshToken string) (bool, error) {
 		}
 	}
 
-	fmt.Printf("Number of rows are %s\n", count)
-
-	if count < 0 {
-		return false, nil
+	if count > 0 {
+		return true, nil
 	}
 
-	return true, nil
+	return false, nil
 }
