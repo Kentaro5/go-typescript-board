@@ -18,7 +18,6 @@ func RefreshToken(refreshToken string) (string, error) {
 
 	// リフレッシュトークンが失効されていないかチェック。
 	disabled, _ := disabledRefreshTokenRepository.Exist(connection, refreshToken)
-	fmt.Println("disabled", disabled)
 	if disabled {
 		return "", err
 	}

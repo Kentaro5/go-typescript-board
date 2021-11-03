@@ -61,7 +61,6 @@ func SignUp(w http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Fatalf("err:", err)
 	}
-	fmt.Println("requestData.Password", requestData.Password)
 
 	err = utils.CheckPassword(hashedPassword, requestData.Password)
 	if err != nil {

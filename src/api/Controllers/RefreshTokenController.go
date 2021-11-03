@@ -37,8 +37,6 @@ func CreateAccessTokenByRefreshToken(w http.ResponseWriter, request *http.Reques
 
 	grantType := request.Form.Get("grant_type")
 	refreshToken := request.Form.Get("refresh_token")
-	fmt.Println("grantType", grantType)
-	fmt.Println("refreshToken", refreshToken)
 	if grantType != "refresh_token" {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid grant type."}, w)
 		return

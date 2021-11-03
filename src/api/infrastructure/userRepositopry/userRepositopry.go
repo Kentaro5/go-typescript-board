@@ -101,7 +101,6 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 		return nil, err
 	}
 	rows, err := stmt.Query(userId)
-	fmt.Println("rows", &rows)
 	if err != nil {
 		return nil, err
 	}
@@ -136,8 +135,6 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 			&userWard.WardCode,
 			&userWard.Name,
 		)
-		fmt.Println("append(user.Ward, userWard)")
-		fmt.Println(user.Ward)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -145,7 +142,6 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 		user.Sex = append(user.Sex, userSex)
 		user.Prefecture = append(user.Prefecture, userPrefecture)
 		user.City = append(user.City, userCity)
-		fmt.Println("append(user.Ward, userWard)", user.Ward)
 		user.Ward = append(user.Ward, userWard)
 	}
 	err = rows.Err()
@@ -197,7 +193,6 @@ func UpdateByUserId(db *sql.DB, userId int, data UpdateUser) error {
 func UpdatePasswordByUserId(db *sql.DB, userId int, password string) error {
 	tx, err := db.Begin()
 	seedType := reflect.TypeOf(tx)
-	fmt.Println("seedType", seedType)
 	if err != nil {
 		log.Fatal(err)
 		return err

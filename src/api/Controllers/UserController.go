@@ -157,21 +157,11 @@ func UpdateUser(w http.ResponseWriter, request *http.Request) {
 	reqCityCode := updateData.CityCode
 	reqWardCode := updateData.WardCode
 
-	fmt.Println("reqName:", reqName)
-	fmt.Println("reqSexCode:", reqSexCode)
-	fmt.Println("reqEmail:", reqEmail)
-	fmt.Println("reqPrefCode:", reqPrefCode)
-	fmt.Println("reqCityCode:", reqCityCode)
-	fmt.Println("reqWardCode:", reqWardCode)
-
-	fmt.Println(userId)
 	connection, err := db.NewConnection()
 	if err != nil {
 		log.Fatalf("err:", err)
 	}
-	fmt.Println("reqWardCode:", reqWardCode)
 	err = userRepositopry.UpdateByUserId(connection, userId, updateData)
-	fmt.Println("reqWardCode:", err)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Failed Update User."}, w)
 		return
@@ -222,7 +212,6 @@ func ChangeUserPassword(w http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 	userId, err := strconv.Atoi(params["userId"])
 	if err != nil {
-		fmt.Println("test", userId)
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "invalid userId parameters"}, w)
 		return
 	}
@@ -253,9 +242,6 @@ func ChangeUserPassword(w http.ResponseWriter, request *http.Request) {
 	grantType := updateData.GrantType
 	refreshToken := updateData.RefreshToken
 
-	fmt.Println("oldPassword", oldPassword)
-	fmt.Println("newPassword", newPassword)
-
 	err = PasswordUseCase.ChangePassword(userId, oldPassword, newPassword)
 	if err != nil {
 		fmt.Println(err)
@@ -263,8 +249,6 @@ func ChangeUserPassword(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fmt.Println("grantType", grantType)
-	fmt.Println("refreshToken", refreshToken)
 	if grantType != "refresh_token" {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Invalid grant type."}, w)
 		return

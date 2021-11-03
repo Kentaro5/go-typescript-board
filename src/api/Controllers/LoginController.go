@@ -42,9 +42,7 @@ type ResponseUser struct {
 }
 
 func Login(w http.ResponseWriter, request *http.Request) {
-	fmt.Println("Login:")
 	h := request.Header
-	fmt.Println(w, h)
 	header := w.Header()
 	header.Set("Content-Type", "application/json")
 	header.Set("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -84,46 +82,34 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	reqEmail := userData.Email
 	reqPassword := userData.Password
 
-	fmt.Println("NewConnection2:" + reqEmail)
-	fmt.Println("NewConnection2:" + reqPassword)
-
 	connection, err := db.NewConnection()
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "DB Connection Failed."}, w)
 		return
 	}
-	fmt.Println("NewConnection:")
 
 	user, err := userRepositopry.FetchByEmail(connection, reqEmail)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Login Failed."}, w)
 		return
 	}
-	fmt.Println("userRepositopry:")
-
-	fmt.Println(&user)
-	fmt.Println(reqPassword)
 
 	err = utils.CheckPassword(user.PasswordHash, reqPassword)
 	if err != nil {
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Password not corrected."}, w)
 		return
 	}
-	fmt.Println("checkPassword:")
 
 	accessToken, err := utils.GenerateAccessToken(user.Id)
 	if err != nil {
-		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "Filed Generate Access Token."}, w)
 		return
 	}
-	fmt.Println("SexCode:")
 
 	refreshToken, err := utils.GenerateRefreshToken(user.Id, user.TokenHash)
 	if err != nil {
-		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.ToJSON(&GenericResponse{Status: 400, Message: "falied Generate Refresh Token."}, w)
@@ -142,7 +128,6 @@ func Sets(w http.ResponseWriter, request *http.Request) {
 
 	// In case you don't have separate CORS middleware
 	if request.Method == http.MethodOptions {
-		fmt.Println(http.SameSiteNoneMode)
 		header := w.Header()
 		header.Set("Access-Control-Allow-Credentials", "true")
 		header.Set("Access-Control-Allow-Headers", "Content-Type, withCredentials")
@@ -161,7 +146,6 @@ func Sets(w http.ResponseWriter, request *http.Request) {
 		Domain:   "localhost",
 	}
 	http.SetCookie(w, cookie)
-	fmt.Println(http.SameSiteNoneMode)
 
 	ping := Ping{http.StatusOK, "ok"}
 	res, _ := json.Marshal(ping)
@@ -188,5 +172,4 @@ func GetPage(w http.ResponseWriter, request *http.Request) {
 	}
 	// 2
 	v := cookie.Value
-	fmt.Println(v)
 }
