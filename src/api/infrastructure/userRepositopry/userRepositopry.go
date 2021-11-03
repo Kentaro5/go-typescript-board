@@ -1,7 +1,6 @@
 package userRepositopry
 
 import (
-	"api/Domain/Entity/userEntity"
 	"database/sql"
 	"fmt"
 	"log"
@@ -10,7 +9,7 @@ import (
 
 const userTableName string = "user_tbl"
 
-func Create(db *sql.DB, user userEntity.User) {
+func Create(db *sql.DB, user SignUpUser) {
 	columns := "(name, email, password, token_hash, sex_code, pref_code, city_code, ward_code, created_at, updated_at)"
 
 	sqlQuery, _ := db.Prepare("INSERT INTO " + userTableName + " " + columns + " VALUES (?,?,?,?,?,?,?,?,?,?)")
@@ -101,9 +100,8 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 遅延処理の実行
-	defer stmt.Close()
 	rows, err := stmt.Query(userId)
+	fmt.Println("rows", &rows)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +113,6 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 	var userPrefecture UserPrefecture
 	var userCity UserCity
 	var userWard UserWard
-
 	for rows.Next() {
 		// Goではループの終了後に、必ずエラーチェックを行う。
 		// 全ての行が処理されるまで、ループが継続されるとは限らないため。
@@ -139,6 +136,8 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 			&userWard.WardCode,
 			&userWard.Name,
 		)
+		fmt.Println("append(user.Ward, userWard)")
+		fmt.Println(user.Ward)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -146,6 +145,7 @@ func FetchByUserId(db *sql.DB, userId int) (*User, error) {
 		user.Sex = append(user.Sex, userSex)
 		user.Prefecture = append(user.Prefecture, userPrefecture)
 		user.City = append(user.City, userCity)
+		fmt.Println("append(user.Ward, userWard)", user.Ward)
 		user.Ward = append(user.Ward, userWard)
 	}
 	err = rows.Err()
