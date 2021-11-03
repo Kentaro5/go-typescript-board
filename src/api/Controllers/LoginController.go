@@ -11,7 +11,6 @@ import (
 	"api/db"
 	"api/infrastructure/userRepositopry"
 	"api/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Ping struct {
@@ -105,9 +104,10 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	fmt.Println(&user)
 	fmt.Println(reqPassword)
 
-	result := checkPassword(user.PasswordHash, reqPassword)
-	fmt.Println(result)
-	if !result {
+	err = utils.CheckPassword(user.PasswordHash, reqPassword)
+	if err != nil {
+		//errMsg := err.Error()
+		//data.ToJSON(&GenericResponse{Status: false, Message: "Unable to retrieve user from database.Please try again later"}, w)
 		return
 	}
 	fmt.Println("checkPassword:")
@@ -140,16 +140,6 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		Data:    &AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, User: ResponseUser{Id: user.Id, Name: user.Name}},
 	}
 	utils.ToJSON(data, w)
-}
-
-func checkPassword(password string, requestPassword string) bool {
-	// テキストのパスワードと、ハッシュ化されたパスワードを比較する
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(requestPassword))
-	if err != nil {
-		return false
-	}
-
-	return true
 }
 
 func Sets(w http.ResponseWriter, request *http.Request) {

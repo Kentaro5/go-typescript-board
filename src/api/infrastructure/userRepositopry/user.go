@@ -48,3 +48,10 @@ type UpdateUser struct {
 	CityCode uint32  `json:"city_code"`
 	WardCode *uint32 `json:"ward_code"`
 }
+
+type UpdatePassword struct {
+	OldPassword  string `json:"old_password"`
+	NewPassword  string `json:"new_password"`
+	RefreshToken string `json:"refresh_token"`
+	GrantType    string `json:"grant_type"`
+}

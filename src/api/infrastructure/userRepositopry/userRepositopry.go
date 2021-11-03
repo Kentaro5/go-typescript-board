@@ -3,7 +3,9 @@ package userRepositopry
 import (
 	"api/Domain/Entity/userEntity"
 	"database/sql"
+	"fmt"
 	"log"
+	"reflect"
 )
 
 const userTableName string = "user_tbl"
@@ -190,4 +192,68 @@ func UpdateByUserId(db *sql.DB, userId int, data UpdateUser) error {
 	}
 
 	return err
+}
+
+func UpdatePasswordByUserId(db *sql.DB, userId int, password string) error {
+	tx, err := db.Begin()
+	seedType := reflect.TypeOf(tx)
+	fmt.Println("seedType", seedType)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	var sql string = "UPDATE " + userTableName + " "
+	sql = sql + "set password = ? "
+	sql = sql + "where id = ?"
+
+	// トランザクション管理処理
+	defer func() {
+		if err != nil {
+			log.Fatal(err)
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	_, err = tx.Exec(
+		sql,
+		password,
+		userId,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return err
+}
+
+func ExistByUserIdAndPassword(db *sql.DB, userId int, password string) (bool, error) {
+	var sql string = "SELECT count(id) FROM " + userTableName + " WHERE id = ? and password = ?"
+	stmt, err := db.Prepare(sql)
+	if err != nil {
+		return false, err
+	}
+	// 遅延処理の実行
+	defer stmt.Close()
+	rows, err := stmt.Query(userId, password)
+	if err != nil {
+		return false, err
+	}
+	// 遅延処理の実行
+	defer rows.Close()
+
+	var count int
+	for rows.Next() {
+		if err := rows.Scan(&count); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if count < 0 {
+		return false, nil
+	}
+
+	return true, nil
 }
