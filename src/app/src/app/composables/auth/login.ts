@@ -21,11 +21,8 @@ export const useLogin = () => {
             email: loginInput.loginEmail,
             password: loginInput.loginPassword,
         }
-        console.log(data);
         axios.post('http://localhost:8000/login', data).then(function (response) {
             const result = response.data
-            console.log('FFFFFFFF');
-            console.log(result);
             if (result.status === 200) {
                 localStorage.setItem('accessToken', result.data.access_token)
                 localStorage.setItem('refreshToken', result.data.refresh_token)

@@ -145,9 +145,6 @@ export const useSingUp = () => {
                 },
             });
             const response:GetSexApiResponse = await instance.get('/get/sex')
-            console.log('GetSexApiResponse');
-            console.log(response);
-            console.log('GetSexApiResponse');
             const sexLists: Sex[] = response.data.data.sexes
                 .map((sex: sexLists) => ({
                     code: sex.sex_code,

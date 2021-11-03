@@ -154,14 +154,12 @@ export const useEditUser = () => {
             userCityCode.value = user.value.cityCode
             userWardCode.value = user.value.wardCode
 
-            console.log(user.value.prefectureCode);
             const {cities} = await useCities(user.value.prefectureCode)
             user.value.cityLists = cities
 
             if (user.value.wardCode !== null) {
                 const {wards} = await useWards(user.value.cityCode)
                 user.value.wardLists = wards
-                console.log(wards);
             }
         } catch (error) {
             useUserResult.value = false

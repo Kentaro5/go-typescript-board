@@ -205,13 +205,11 @@ export default defineComponent({
         const prefCode = parseInt(prefCodeText)
         const {cities, changeCityResult} = await useCities(prefCode)
         isCityDataSet.value = changeCityResult
-        console.log(cities);
         cityLists.value = cities
       }
     }
 
     const executeChangeWard = async (event: Event) => {
-      console.log(event.target.value);
       const cityCodeText = event.target.value
       if (cityCodeText !== '') {
         const cityCode = parseInt(cityCodeText)
