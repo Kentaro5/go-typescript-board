@@ -17,7 +17,16 @@
                   <p>{{user.email}}</p>
                 </div>
               </div>
-              <router-link to="/myPage/edit" class="button is-primary">編集</router-link>
+              <div class="field is-grouped">
+                <div class="control">
+                  <router-link to="/myPage/edit" class="button is-primary">編集</router-link>
+                </div>
+              </div>
+              <div class="field is-grouped">
+                <div class="control">
+                  <router-link to="/myPage/change-password" class="button is-primary">パスワード変更</router-link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

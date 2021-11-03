@@ -136,6 +136,11 @@
                     </button>
                   </div>
                 </div>
+                <div class="field is-grouped">
+                  <div class="control">
+                    <router-link to="/myPage/" class="button is-link">戻る</router-link>
+                  </div>
+                </div>
               </form>
             </div>
           </div>
@@ -165,7 +170,6 @@ export default defineComponent({
     const prefectureValue = ref<Number | null>(null)
     const cityValue = ref<Number | null>(null)
     const wardValue = ref<Number | null>(null)
-
     const {
       user,
       useUserResult,
