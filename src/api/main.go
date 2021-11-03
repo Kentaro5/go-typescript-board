@@ -45,6 +45,7 @@ func main() {
 	patchRouter := router.Methods(http.MethodPatch).Subrouter()
 	patchRouter.HandleFunc("/user/{userId}", Controllers.UpdateUser)
 	patchRouter.HandleFunc("/user/{userId}/changePassword/", Controllers.ChangeUserPassword)
+	patchRouter.Use(amw.ValidateAccessToken)
 
 	//cors optionsGoes Below
 	c := cors.New(cors.Options{

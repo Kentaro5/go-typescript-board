@@ -4,20 +4,24 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-5-tablet is-4-desktop is-3-widescreen">
-            <form class="box" @submit.prevent="sendRequest">
+            <div class="notification is-danger is-light" v-if="loginStatus === 'failed'" @click="changeLoginStatus('')">
+              <button class="delete"></button>
+              <p>ログインに失敗しました。</p>
+            </div>
+            <form class="box" @submit.prevent="login">
               <div class="field">
-                <label for="" class="label">Email</label>
+                <label for="email" class="label">Email</label>
                 <div class="control has-icons-left">
-                  <input type="email" name="email"  placeholder="e.g. bobsmith@gmail.com" class="input" required>
+                  <input type="email" name="email"  placeholder="e.g. bobsmith@gmail.com" v-model="loginEmail" class="input" required>
                   <span class="icon is-small is-left">
                   <i class="fa fa-envelope"></i>
                 </span>
                 </div>
               </div>
               <div class="field">
-                <label for="" class="label">Password</label>
+                <label for="password" class="label">Password</label>
                 <div class="control has-icons-left">
-                  <input type="password" name="password" placeholder="*******" class="input" required>
+                  <input type="password" name="password" placeholder="*******" class="input" v-model="loginPassword" required>
                   <span class="icon is-small is-left">
                   <i class="fa fa-lock"></i>
                 </span>
@@ -27,6 +31,11 @@
                 <button class="button is-success">
                   Login
                 </button>
+              </div>
+              <div class="field is-grouped">
+                <div class="control">
+                  <router-link to="/signUp" class="button is-link">登録</router-link>
+                </div>
               </div>
             </form>
           </div>
@@ -38,32 +47,18 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from "axios"
+import {useLogin} from "../../composables/auth/login";
 
 export default defineComponent({
   setup: () => {
-    const err = false
+    const {loginEmail, loginPassword, login, loginStatus, changeLoginStatus} = useLogin()
 
-    const sendRequest = () => {
-      // TODO: あとで、フォームの値をバインドする。
-      const data = {
-        email: 'test@example.com',
-        password: 'test',
-      }
-      axios.post('http://localhost:8000/login', data).then(function (response) {
-        const result = response.data
-        console.log(result.data);
-        if (result.status === 200) {
-          localStorage.setItem('accessToken', result.data.access_token)
-          localStorage.setItem('refreshToken', result.data.refresh_token)
-          localStorage.setItem('user', result.data.user)
-          location.href = '/'
-        }
-      })
-    }
     return {
-      err,
-      sendRequest,
+      loginEmail,
+      loginPassword,
+      login,
+      loginStatus,
+      changeLoginStatus,
     }
   },
 })

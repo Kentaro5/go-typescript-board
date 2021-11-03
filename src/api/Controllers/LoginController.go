@@ -84,19 +84,19 @@ func Login(w http.ResponseWriter, request *http.Request) {
 	reqEmail := userData.Email
 	reqPassword := userData.Password
 
-	fmt.Println("NewConnection:" + reqEmail)
-	fmt.Println("NewConnection:" + reqPassword)
+	fmt.Println("NewConnection2:" + reqEmail)
+	fmt.Println("NewConnection2:" + reqPassword)
 
 	connection, err := db.NewConnection()
 	if err != nil {
-		log.Fatalf("err:", err)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "DB Connection Failed."}, w)
+		return
 	}
 	fmt.Println("NewConnection:")
 
 	user, err := userRepositopry.FetchByEmail(connection, reqEmail)
 	if err != nil {
-		//errMsg := err.Error()
-		//data.ToJSON(&GenericResponse{Status: false, Message: "Unable to retrieve user from database.Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Login Failed."}, w)
 		return
 	}
 	fmt.Println("userRepositopry:")
@@ -106,8 +106,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 
 	err = utils.CheckPassword(user.PasswordHash, reqPassword)
 	if err != nil {
-		//errMsg := err.Error()
-		//data.ToJSON(&GenericResponse{Status: false, Message: "Unable to retrieve user from database.Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Password not corrected."}, w)
 		return
 	}
 	fmt.Println("checkPassword:")
@@ -117,8 +116,7 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		// data.ToJSON(&GenericError{Error: err.Error()}, w)
-		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "Filed Generate Access Token."}, w)
 		return
 	}
 	fmt.Println("SexCode:")
@@ -128,12 +126,10 @@ func Login(w http.ResponseWriter, request *http.Request) {
 		fmt.Println(accessToken)
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		//utils.ToJSON(&GenericError{Error: err.Error()}, w)
-		//utils.ToJSON(&GenericResponse{Status: false, Message: "Unable to login the user. Please try again later"}, w)
+		utils.ToJSON(&GenericResponse{Status: 400, Message: "falied Generate Refresh Token."}, w)
 		return
 	}
 
-	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",

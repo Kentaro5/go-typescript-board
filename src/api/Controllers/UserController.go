@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"api/Domain/UseCase/PasswordUseCase"
@@ -70,7 +71,16 @@ func GetUser(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	//utils.ToJSON(&AuthResponse{AccessToken: accessToken, RefreshToken: refreshToken, Username: user.Username}, w)
+	var wardCode *uint32
+	var wardName *string
+	if (user.Ward == nil) || reflect.ValueOf(user.Ward).IsNil() {
+		wardCode = nil
+		wardName = nil
+	} else {
+		wardCode = user.WardCode
+		wardName = user.Ward[0].Name
+	}
+
 	data := &GenericResponse{
 		Status:  http.StatusOK,
 		Message: "Successfully logged in",
@@ -84,8 +94,8 @@ func GetUser(w http.ResponseWriter, request *http.Request) {
 			Prefecture: user.Prefecture[0].Name,
 			CityCode:   user.CityCode,
 			City:       user.City[0].Name,
-			WardCode:   user.WardCode,
-			Ward:       user.Ward[0].Name,
+			WardCode:   wardCode,
+			Ward:       wardName,
 			CreatedAt:  user.CreatedAt,
 		},
 	}

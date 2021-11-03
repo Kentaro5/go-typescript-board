@@ -3,7 +3,7 @@ import {readonly} from "vue";
 import {checkAuth} from "../auth/auth";
 import {decodeJwt} from "../jwt/jwt";
 
-type GetWardiResponse = {
+type GetWardResponse = {
     config: object
     data: {
         data: {
@@ -41,7 +41,7 @@ export const useWards = async (cityCode: Number | null) => {
                 'Authorization': 'Bearer ' + accessJwtToken,
             },
         });
-        const response: GetWardiResponse = await instance.get('/ward/' + cityCode)
+        const response: GetWardResponse = await instance.get('/ward/' + cityCode)
         wards = []
         if (response.data.data.wards !== null) {
             wards = response.data.data.wards
